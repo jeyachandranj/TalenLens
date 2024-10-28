@@ -1,5 +1,5 @@
 .upload-container {
-    max-width: 900px;
+    max-width: 1300px;
     margin: 0 auto;
     padding: 40px;
     background-color: #fff;
@@ -22,7 +22,7 @@
   }
   
   .upload-image img {
-    width: 400px;
+    width: 800px;
     height: auto;
   }
   

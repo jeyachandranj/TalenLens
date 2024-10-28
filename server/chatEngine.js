@@ -132,43 +132,43 @@ class Chatbot {
     }
 
 
-    async determineScoreAndSection(previousUserMsg, previousAiResponse) {  
-        const classificationPrompt = `  
-            Based on the previous user message: "${previousUserMsg}",  
-            and the previous AI response: "${previousAiResponse}",  
-            please provide:  
-            1. A score from 1 to 10 indicating the quality or relevance.  
-            2. A section classification based on the content:   
-               'general', 'skills', 'project', or 'experience'.  
+    // async determineScoreAndSection(previousUserMsg, previousAiResponse) {  
+    //     const classificationPrompt = `  
+    //         Based on the previous user message: "${previousUserMsg}",  
+    //         and the previous AI response: "${previousAiResponse}",  
+    //         please provide:  
+    //         1. A score from 1 to 10 indicating the quality or relevance.  
+    //         2. A section classification based on the content:   
+    //            'general', 'skills', 'project', or 'experience'.  
                
-            Format your response as JSON:  
-            {  
-                "score": <integer>,  
-                "section": "general | skills | project | experience"  
-            }`;  
+    //         Format your response as JSON:  
+    //         {  
+    //             "score": <integer>,  
+    //             "section": "general | skills | project | experience"  
+    //         }`;  
     
-        const scoreCompletion = await this.groq.chat.completions.create({  
-            messages: [{ role: "system", content: classificationPrompt }],  
-            model: "llama3-8b-8192",  
-        });  
+    //     const scoreCompletion = await this.groq.chat.completions.create({  
+    //         messages: [{ role: "system", content: classificationPrompt }],  
+    //         model: "llama3-8b-8192",  
+    //     });  
     
-        if (scoreCompletion.choices && scoreCompletion.choices[0] && scoreCompletion.choices[0].message) {  
-            const scoreResponse = scoreCompletion.choices[0].message.content;   
-            let parsedScoreResponse;  
+    //     if (scoreCompletion.choices && scoreCompletion.choices[0] && scoreCompletion.choices[0].message) {  
+    //         const scoreResponse = scoreCompletion.choices[0].message.content;   
+    //         let parsedScoreResponse;  
     
-            try {  
-                parsedScoreResponse = JSON.parse(scoreResponse);  
-            } catch (error) {  
-                console.error("Failed to parse score response:", scoreResponse);  
-                throw new Error("Invalid score response format");  
-            }  
+    //         try {  
+    //             parsedScoreResponse = JSON.parse(scoreResponse);  
+    //         } catch (error) {  
+    //             console.error("Failed to parse score response:", scoreResponse);  
+    //             throw new Error("Invalid score response format");  
+    //         }  
     
-            return parsedScoreResponse;  
-        } else {  
-            console.log("Invalid score completion format:", scoreCompletion);  
-            throw new Error("Invalid score completion format");  
-        }  
-    }  
+    //         return parsedScoreResponse;  
+    //     } else {  
+    //         console.log("Invalid score completion format:", scoreCompletion);  
+    //         throw new Error("Invalid score completion format");  
+    //     }  
+    // }  
     
 
     
@@ -211,7 +211,10 @@ class Chatbot {
             model: "llama3-8b-8192",
         });
 
-        const { score, section } = await this.determineScoreAndSection(previousUserMsg, previousAiResponse);  
+        // const { score, section } = await this.determineScoreAndSection(previousUserMsg, previousAiResponse);  
+        const score = 7;
+        const section  = 'general';  
+
 
         if (completion.choices && completion.choices[0] && completion.choices[0].message) {
             const aiResponse = completion.choices[0].message.content;

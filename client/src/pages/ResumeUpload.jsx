@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./ResumeUpload.css";
+import resumupload from "../assets/resumupload.png"
+import TopBar from "./TopBar";
 
 const UploadResume = () => {
   const [name, setName] = useState("");
@@ -15,17 +17,21 @@ const UploadResume = () => {
       alert("Please upload a resume!");
     } else {
       console.log("Resume uploaded:", file);
-      // Perform your file upload logic here
     }
   };
 
   return (
+    <>
+    <div style={{marginRight:"400px"}}>
+    <TopBar/>
+  </div>
     <div className="upload-container">
+     
       <h2>UPLOAD RESUME</h2>
       <div className="upload-content">
         <div className="upload-image">
           <img
-            src="https://via.placeholder.com/400" // Replace with actual image URL
+            src={resumupload} // Replace with actual image URL
             alt="Upload Illustration"
           />
         </div>
@@ -63,6 +69,7 @@ const UploadResume = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
