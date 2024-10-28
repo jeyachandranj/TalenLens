@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import TopBar from "../pages/TopBar"
+import success from "../assets/success.png";
 
 function UserSelect() {
   const [selected, setSelected] = useState("");
@@ -102,6 +103,14 @@ function UserSelect() {
               )}
             </div>
           )}
+          {customUser && (
+            <img
+            src={success}
+            alt="success"
+            className="success-icon"
+        />
+          )}
+          
           <Link
             to="/face"
             state={{ account: selected }}

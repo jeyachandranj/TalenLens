@@ -3,6 +3,7 @@ import * as faceapi from "face-api.js";
 import AuthIdle from "../assets/images/auth-idle.svg";
 import AuthFace from "../assets/images/auth-face.svg";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import TopBar from "../pages/TopBar";
 
 function FaceDetection() {
   const [tempAccount, setTempAccount] = useState("");
@@ -178,6 +179,10 @@ function FaceDetection() {
   }
 
   return (
+    <>
+    <div>
+      <TopBar/>
+    </div>
     <div className="h-full flex flex-col items-center justify-center gap-[24px] max-w-[720px] mx-auto">
       {!localUserStream && !modelsLoaded && (
         <h2 className="text-center text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -294,6 +299,7 @@ function FaceDetection() {
         )}
       </div>
     </div>
+    </>
   );
 }
 

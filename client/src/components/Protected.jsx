@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import TopBar from "../pages/TopBar";
 
 function Protected() {
   const [account, setAccount] = useState(null);
@@ -19,6 +20,10 @@ function Protected() {
   }
 
   return (
+    <>
+    <div>
+      <TopBar/>
+    </div>
     <div className="bg-white pt-40 md:pt-60">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-center text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl mb-12">
@@ -64,6 +69,7 @@ function Protected() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

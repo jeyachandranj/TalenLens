@@ -16,7 +16,7 @@ const TopBar = () => {
   };
 
   const goHome = () => {
-    navigate("/organisation"); // Navigate to home page
+    navigate("/resumupload"); // Navigate to home page
   };
 
   return (

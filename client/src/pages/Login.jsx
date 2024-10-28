@@ -28,7 +28,7 @@ const LandingPage = () => {
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("email", user.email);
       localStorage.setItem("name", user.displayName);
-      window.location.pathname = "/uploadface"; // Redirect after sign-in
+      window.location.pathname = "/resumupload"; // Redirect after sign-in
     } catch (error) {
       setError(error.message);
       console.error("Google sign-in error:", error);
