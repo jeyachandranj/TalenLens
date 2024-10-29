@@ -21,7 +21,7 @@ function Protected() {
 
   return (
     <>
-    <div>
+    <div style={{marginRight:"1920px"}}>
       <TopBar/>
     </div>
     <div className="bg-white pt-40 md:pt-60">
@@ -46,7 +46,7 @@ function Protected() {
           <div
             onClick={() => {
               localStorage.removeItem("faceAuth");
-              navigate("/Interview");
+              navigate("/InterviewInstruction");
             }}
             className="flex gap-2 mt-12 w-fit mx-auto cursor-pointer z-10 py-3 px-6 rounded-full bg-gradient-to-r from-red-400 to-red-600"
           >

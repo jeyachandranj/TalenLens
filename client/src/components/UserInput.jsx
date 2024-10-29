@@ -96,23 +96,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
   };
 
 
-  useEffect(() => {
-    const checkForObjects = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/object_detected');
-        const data = await response.json();
-        console.log("data", data.confidence);
-        if (data) {
-          // alert(`Alert! ${data.class_name} detected!`);
-        }
-      } catch (error) {
-        console.error("Error fetching detected objects:", error);
-      }
-    };
-
-    const interval = setInterval(checkForObjects, 20000); // Check every 2 seconds
-    return () => clearInterval(interval);
-  }, []);
+ 
 
 
   const initializeSpeechRecognition = () => {
@@ -299,8 +283,8 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
         <section className="chatbotInputContainer">
           <div className="chatbotInput" data-listening={listening}>
             <div className="chatbotInput_container">
-              <form onSubmit={(e) => e.preventDefault()} className="inputForm">
-                <div className="microphoneIcon" >
+              <form onSubmit={(e) => e.preventDefault()} className="inputForm" style={{marginLeft:"200px",width:"1400px"}}>
+                <div className="microphoneIcon"  style={{marginTop:"200px",marginRight:"150px"}}>
                   <input type="checkbox" id="checkbox" onChange={toggleListening} />
                   <label className="switch" htmlFor="checkbox">
                     <div className="mic-on">
@@ -340,10 +324,11 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
                     color: "white",
                     backgroundColor: "black",
                     fontSize: "20px",
-                    marginLeft: "800px",
+                    marginLeft: "600px",
                     width: "800px",
                     maxHeight: "200px",
                     overflow: "hidden",
+                    
                   }}
                   placeholder="Speak or type a message..."
                 />
@@ -357,13 +342,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
             </div>
           )}
 
-          <div className="videoFeed" style={{ position: "fixed", top: "0", right: "0px", width: "300px", height: "200px", border: "2px solid #ccc" }}>
-            <img
-              src="http://127.0.0.1:5000/video_feed"
-              alt="Video Stream"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
+         
 
           <div className="chatbotSettings" data-visible={visible}>
             <SettingsDisplay

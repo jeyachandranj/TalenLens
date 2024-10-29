@@ -180,8 +180,8 @@ function FaceDetection() {
 
   return (
     <>
-    <div>
-      <TopBar/>
+    <div style={{marginRight:"1920px"}}>
+    <TopBar/>
     </div>
     <div className="h-full flex flex-col items-center justify-center gap-[24px] max-w-[720px] mx-auto">
       {!localUserStream && !modelsLoaded && (
