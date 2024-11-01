@@ -131,7 +131,7 @@ const storage = multer.diskStorage({
 app.use(express.json());
 app.use(bodyParser.json());
 
-const port = process.env.PORT || 3000;
+const port = 80;
 
 server.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);

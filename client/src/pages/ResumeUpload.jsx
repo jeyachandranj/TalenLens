@@ -65,7 +65,7 @@ const UploadResume = () => {
     formData.append("fileName", fileName); // Add the file name to the form data
   
     try {
-      const response = await fetch("http://localhost:3000/upload", {
+      const response = await fetch("http://ec2-13-201-4-41.ap-south-1.compute.amazonaws.com:80/upload", {
         method: "POST",
         body: formData,
       });
