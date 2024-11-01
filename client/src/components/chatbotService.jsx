@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 class ChatbotService {
 	constructor() {
 		//this.socket = io();
-		 this.socket = io("http://ec2-13-201-4-41.ap-south-1.compute.amazonaws.com:80");
+		 this.socket = io("http://localhost:3000");
 
 	}
 

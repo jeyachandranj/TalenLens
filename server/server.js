@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const multer = require("multer");
 const path = require("path");
 const mongoose = require("mongoose");
+const AWS = require('aws-sdk');
 
 
 dotenv.config();
@@ -131,7 +132,51 @@ const storage = multer.diskStorage({
 app.use(express.json());
 app.use(bodyParser.json());
 
-const port = 80;
+const port = 3000;
+
+// AWS S3 configuration
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY,
+  region: process.env.AWS_REGION,
+});
+
+const s3 = new AWS.S3();
+
+// Configure Multer for file uploads
+const storageaudio = multer.memoryStorage(); // Store files in memory
+const audio = multer({ storageaudio });
+
+// Define the endpoint for audio file upload
+app.post('/upload-audio', audio.single('audioFile'), async (req, res) => {
+  try {
+      if (!req.file) {
+          return res.status(400).send('No file uploaded.');
+      }
+
+      const { originalname, mimetype, buffer } = req.file; // Extract file properties
+      const fileName = `${Date.now()}_${originalname}`; // Generate a unique file name
+
+      // S3 upload parameters
+      const uploadParams = {
+          Bucket: process.env.S3_BUCKET_NAME, // Use the bucket name from .env
+          Key: `audio/${fileName}`, // File path in S3
+          Body: buffer, // The file buffer from multer
+          ContentType: mimetype, // Set the content type dynamically
+      };
+
+      // Upload to S3
+      const data = await s3.upload(uploadParams).promise();
+      console.log(`File uploaded successfully. ${data.Location}`);
+
+      // Return the URL of the uploaded file
+      res.status(200).json({ url: data.Location });
+  } catch (error) {
+      console.error('Error uploading file to S3:', error);
+      res.status(500).send('Error uploading file.');
+  }
+});
+
 
 server.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);

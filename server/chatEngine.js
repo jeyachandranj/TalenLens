@@ -7,9 +7,15 @@ const pdfExtract = new PDFExtract();
 const fs = require("fs");
 const request = require("request");
 const mongoose = require("mongoose");
+const AWS = require('aws-sdk');
+const FormData = require('form-data'); // Import the form-data package
+const axios = require('axios'); // Import axios
+
+
 const Groq = require("groq-sdk");
 
 let uri = "mongodb+srv://jeyachandranj:jj.jeyan@cluster0.pe8ib.mongodb.net/live-interview"
+
 mongoose.connect(uri)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.error("MongoDB connection error:", err));
@@ -24,6 +30,13 @@ const chatSchema = new mongoose.Schema({
 });
 
 const Chat = mongoose.model("Chat", chatSchema);
+
+const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+});
+
 
 const MAX_INTERVIEW_DURATION = 300; // Total interview time in seconds (e.g., 30 minutes)
 const STAGE_DURATION = 60; // Each stage duration in seconds (e.g., 5 minutes)
@@ -359,14 +372,16 @@ class Chatbot {
         const fileName = `${Math.random().toString(36).substring(7)}.wav`;
         const audioFilePath = path.join(__dirname, '..', 'client/public/temp', 'audio', fileName);
         console.log("path", audioFilePath);
+    
         const audioConfig = sdk.AudioConfig.fromAudioFileOutput(audioFilePath);
         const synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, audioConfig);
+        
         synthesizer.visemeReceived = (s, e) => {
             visemes.push({ visemeId: e.visemeId, audioOffset: e.audioOffset / 10000 });
         };
-
+    
         const ssml = `<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${this.speechConfig.speechSynthesisVoiceName}">${text}</voice></speak>`;
-
+    
         await new Promise((resolve, reject) => {
             synthesizer.speakSsmlAsync(ssml, (result) => {
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
@@ -376,12 +391,74 @@ class Chatbot {
                 }
             });
         });
-
-
+    
         synthesizer.close();
+        console.log("jeyan");
+        let response=" ";
+    
+        try {
+            const formData = new FormData(); // Create an instance of FormData
+            formData.append('audioFile', fs.createReadStream(audioFilePath)); // Append the audio file
+    
+             response = await axios.post('http://localhost:3000/upload-audio', formData, {
+                headers: {
+                    ...formData.getHeaders(), // Include necessary headers
+                    'Content-Type': 'multipart/form-data' // Ensure the content type is set
+                }
+            });
+            console.log("jeyan");
 
-        return { audioFilePath: audioFilePath, visemes: visemes };
+    
+            console.log('Upload response:', response.data);
+        } catch (error) {
+            console.error('Error uploading audio file:', error);
+        }
+    
+        return { audioFilePath:  response.data.url, visemes: visemes };
     }
+
+    // async textToSpeech(text) {
+    //     let visemes = [];
+    //     const fileName = `${Math.random().toString(36).substring(7)}.wav`;
+    //     const localFilePath = path.join(__dirname, '..', 'client/public/temp', 'audio', fileName);
+    //     const audioConfig = sdk.AudioConfig.fromAudioFileOutput(localFilePath);
+    //     const synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, audioConfig);
+        
+    //     synthesizer.visemeReceived = (s, e) => {
+    //         visemes.push({ visemeId: e.visemeId, audioOffset: e.audioOffset / 10000 });
+    //     };
+    
+    //     const ssml = `<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${this.speechConfig.speechSynthesisVoiceName}">${text}</voice></speak>`;
+    
+    //     await new Promise((resolve, reject) => {
+    //         synthesizer.speakSsmlAsync(ssml, (result) => {
+    //             if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+    //                 resolve();
+    //             } else {
+    //                 reject(result);
+    //             }
+    //         });
+    //     });
+    
+    //     synthesizer.close();
+    
+    //     const fileContent = fs.readFileSync(localFilePath);
+    //     const s3Params = {
+    //         Bucket: process.env.S3_BUCKET_NAME,
+    //         Key: `audio/${fileName}`,
+    //         Body: fileContent,
+    //         ContentType: 'audio/mpeg',
+    //         ACL: 'public-read',
+    //     };
+    
+    //     const s3Result = await s3.upload(s3Params).promise();
+    
+    //     fs.unlinkSync(localFilePath);
+    
+    //     return { audioFilePath: s3Result.Location, visemes: visemes };
+    //     // return { audioFilePath: localFilePath, visemes: visemes };
+
+    // }
 
     async speechToText() {
         return new Promise((resolve, reject) => {

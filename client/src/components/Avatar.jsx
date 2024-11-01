@@ -86,15 +86,17 @@ export function Avatar(props) {
 
 	let audio = useMemo(() => {
 		let audioPath = props.response.speechData.audioFilePath;
+		console.log("aaaaaaaaaaaaaa",audioPath);
 		if (!audioPath) {
 			audioPath = "";
 		}
+		
 		// turn to path to URL which is inside the public/temp/audio folder
-		audioPath = audioPath.replace(/\\/g, "/");
-		// Get audio file name
-		audioPath = audioPath.split("/").pop();
-		// Add URL to audio file
-		audioPath = `/temp/audio/${audioPath}`;
+		// audioPath = audioPath.replace(/\\/g, "/");
+		// // Get audio file name
+		// audioPath = audioPath.split("/").pop();
+		// // Add URL to audio file
+		// audioPath = `/temp/audio/${audioPath}`;
 
 		console.log("Received response: ", props.response.response);
 
