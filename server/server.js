@@ -7,7 +7,8 @@ const process = require("process");
 const cors = require('cors')
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const path = require('path');
+const multer = require("multer");
+const path = require("path");
 const mongoose = require("mongoose");
 
 
@@ -36,10 +37,10 @@ io.on("connection", (socket) => {
     socket.on("disconnect", (reason) => {
         console.log(`DISCONNECTED ${socket.id}: ${reason}`);
     });
-
-    socket.on("init", (settings) => {
+    
+    socket.on("init", async ({ settings, round ,name }) => {
         try {
-            chatbot.initialize(settings, socket.id);
+            await chatbot.initialize(settings, round,name, socket.id); 
             socket.emit("responseInit", true);
             console.log(`INITIALIZED ${socket.id}`);
         } catch (err) {
@@ -103,6 +104,28 @@ app.get('/api/evaluateInterview', async (req, res) => {
   return res.json(interviewProgress);  
 });
 
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, "public/temp"),
+    filename: (req, file, cb) => {
+      cb(null, "resume.pdf");
+    },
+  });
+  
+  const upload = multer({ storage });
+  
+  app.post("/upload", upload.single("resume"), (req, res) => {
+    try {
+      res.status(200).json({
+        message: "File uploaded successfully",
+        fileName: "resume.pdf", // Respond with the file name "resume.pdf"
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "File upload failed",
+        error,
+      });
+    }
+  });
 
 
 app.use(express.json());

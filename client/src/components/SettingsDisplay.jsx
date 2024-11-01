@@ -5,6 +5,7 @@ const SettingsDisplay = ({ settings, setSettings, visible, setVisible }) => {
   const [newSettings, setNewSettings] = useState(settings);
   const [isTabLockActive,setIsTabLockActive] = useState(false);
   const [tabSwitchCount,setTabSwitchCount] = useState(0);
+  const [show,setShow] = useState(false);
 
 
   useEffect(() => {
@@ -68,85 +69,25 @@ const handleSave = () => {
 
   return (
     <div className="settingsContainer" >
-      <div className="closeButton" onClick={() => setVisible(false)}>
-        <i className="fas fa-times">
-          <h3 style={{ fontSize: "20px", marginTop: "10px" }}>X</h3>
-        </i>
-      </div>
-      <h2 style={{ textAlign: "center",color:"white"}}>Settings</h2>
-      <form className="settings" onSubmit={updateSettings} ref={formRef} >
-        <div className="setting">
-          <label htmlFor="job_title">Job Title</label>
-          <input
-            type="text"
-            name="job_title"
-            id="job_title"
-            value={newSettings.job_title}
-            required
-            onChange={(e) => setNewSettings({ ...newSettings, job_title: e.target.value })}
-          />
-        </div>
-        <div className="setting">
-          <label htmlFor="company_name">Company Name</label>
-          <input
-            type="text"
-            name="company_name"
-            id="company_name"
-            value={newSettings.company_name}
-            required
-            onChange={(e) => setNewSettings({ ...newSettings, company_name: e.target.value })}
-          />
-        </div>
-        <div className="setting">
-          <label htmlFor="interviewer_name">Interviewer Name</label>
-          <input
-            type="text"
-            name="interviewer_name"
-            id="interviewer_name"
-            value={newSettings.interviewer_name}
-            required
-            onChange={(e) => setNewSettings({ ...newSettings, interviewer_name: e.target.value })}
-          />
-        </div>
+      <h2 style={{ textAlign: "center",color:"white"}}>RULES</h2><br/>  
+      <form  onSubmit={updateSettings} ref={formRef} >
+        <div >
+        <div style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+            <p>• The user must start with greetings for the interview.</p>
+            <p>• To respond to each question, the user can answer either by voice or text. To use the mic, click on the mic icon, speak, and then press Enter upon completion.</p>
+            <p>• The interview consists of 3 rounds, each lasting 10 minutes.</p>
+            <p>• The first round is the Technical Round, the second is the Project Round, and the third is the HR Round.</p>
+            <h4 style={{ color: 'green', fontWeight: 'bold', textAlign: 'center', marginTop: '20px' }}>
+  ALL THE BEST !
+</h4><br/>
+          </div>
 
-        <div className="setting">
-          <label htmlFor="link_to_resume">Link to Resume</label>
-          <input
-            type="text"
-            name="link_to_resume"
-            id="link_to_resume"
-            value={newSettings.link_to_resume}
-            onChange={(e) => setNewSettings({ ...newSettings, link_to_resume: e.target.value })}
-          />
-        </div>
-
-        <div className="setting">
-          <label htmlFor="resume">Resume Title</label>
-          <select
-            name="resume"
-            id="resume"
-            value={newSettings.resume_title}
-            onChange={(e) => setNewSettings({ ...newSettings, resume_title: e.target.value })}
-          >
-            <option value="skills">Skills</option>
-            <option value="project">Project</option>
-            <option value="hr">HR</option>
-            <option value="all">All</option>
-          </select>
-        </div>
-
-        <div className="setting__button">
-          <button className="btn_outline" type="submit" style={{ width: "300px" }}  onClick={handleSave}>
-            Save
+          <button className="btn_outline" type="submit" style={{ width: "300px" }}  onClick={() => setVisible(false)}>
+            Start
           </button>
+         
         </div>
-      </form>
-
-
-
-      
-
-      
+      </form> 
     </div>
   );
 };

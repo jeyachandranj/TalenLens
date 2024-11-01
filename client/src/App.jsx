@@ -20,10 +20,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Lagin />} />
         <Route path="/resumupload" element={<ResumeUpload/>}/>
-        <Route path="/interview" element={<Advance />} />
+        <Route path="/interview1" element={<Advance />} />
         <Route path="/InterviewInstruction" element={<InterviewInstruction/>}/>
         <Route path="/objectDetection" element={<ObjectDetection/>}/>
-        <Route path="/start" element={<Start/>}/>
+        <Route path="/interview" element={<Start/>}/>
         <Route path="/" element={<Layout />}>
           <Route path="/uploadface" element={<UserSelect />} />
           <Route path="face" element={<FaceDetection />} />

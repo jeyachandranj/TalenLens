@@ -2,17 +2,16 @@ import { io } from "socket.io-client";
 
 class ChatbotService {
 	constructor() {
-		// Production
 		//this.socket = io();
-
-		// Development
-		//  this.socket = io("https://ai-interview-71dz.onrender.com");
 		 this.socket = io("http://localhost:3000");
 
 	}
 
 	async init(settings) {
-		this.socket.emit("init", settings);
+		let round = localStorage.getItem("round");
+		const name = localStorage.getItem('name')
+
+		this.socket.emit("init", {settings,round,name});
 
 		let response = await new Promise((resolve, reject) => {
 			this.socket.on("responseInit", (response) => {
@@ -43,10 +42,7 @@ class ChatbotService {
 			interviewDuration = (Date.now()-interviewStartTime)/1000;
 			console.log('response duration:', interviewDuration);
 		}
-		if(interviewDuration>1200 || duration>120)
-		{
-			message = "Please End the Interview";
-		}
+		
 
 		this.socket.emit("message", { question: message,duration,interviewStartTime,name });
 

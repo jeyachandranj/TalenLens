@@ -3,10 +3,13 @@ import "./ResumeUpload.css";
 import resumupload from "../assets/resumupload.png";
 import TopBar from "./TopBar";
 import { useNavigate } from "react-router-dom";
+import { getDocument } from "pdfjs-dist/build/pdf";
 
 const UploadResume = () => {
   const [name, setName] = useState("");
   const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(""); // State to hold the file name
+  const [pdfText, setPdfText] = useState(""); // State to hold the PDF text
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,22 +20,70 @@ const UploadResume = () => {
   }, []);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!file) {
-      alert("Please upload a resume!");
-    } else {
-      if (name) {
-        localStorage.setItem("name", name); // Store name in local storage
-      }
-      console.log("Resume uploaded:", file);
-      navigate("/uploadface");
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setFileName(selectedFile.name); // Set the file name in state
+      extractTextFromPDF(selectedFile); // Extract text when a file is selected
     }
   };
 
+  const extractTextFromPDF = async (file) => {
+    const fileReader = new FileReader();
+    fileReader.onload = async (event) => {
+      const typedArray = new Uint8Array(event.target.result);
+      const pdf = await getDocument(typedArray).promise;
+      let text = "";
+
+      for (let i = 0; i < pdf.numPages; i++) {
+        const page = await pdf.getPage(i + 1);
+        const content = await page.getTextContent();
+        const pageText = content.items.map(item => item.str).join(" ");
+        text += pageText + " "; // Accumulate text from all pages
+      }
+
+      setPdfText(text.trim()); // Set the PDF text in state
+      console.log("Extracted PDF Text:", pdfText);
+    };
+
+    fileReader.readAsArrayBuffer(file); // Read the file as an array buffer
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Please upload a resume!");
+      return;
+    }
+  
+    if (name) {
+      localStorage.setItem("name", name); // Store name in local storage
+    }
+  
+    const formData = new FormData();
+    formData.append("resume", file);
+    formData.append("fileName", fileName); // Add the file name to the form data
+  
+    try {
+      const response = await fetch("http://localhost:3000/upload", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        console.log("Resume uploaded:", file);
+        console.log("Uploaded file name:", result.fileName); // Log the uploaded file name
+        navigate("/uploadface");
+      } else {
+        alert("File upload failed.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("An error occurred during file upload.");
+    }
+  };
+  
   return (
     <>
       <div style={{ marginRight: "400px" }}>

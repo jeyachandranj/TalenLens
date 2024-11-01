@@ -30,6 +30,7 @@
     "lodash.debounce": "^4.0.8",
     "microsoft-cognitiveservices-speech-sdk": "^1.38.0",
     "npm": "^10.9.0",
+    "pdfjs-dist": "^4.7.76",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.4",
     "react-bootstrap-icons": "^1.11.4",
