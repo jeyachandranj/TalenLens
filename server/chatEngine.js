@@ -9,7 +9,8 @@ const request = require("request");
 const mongoose = require("mongoose");
 const Groq = require("groq-sdk");
 
-mongoose.connect("mongodb://localhost:27017/live-interview")
+let uri = "mongodb+srv://jeyachandranj:jj.jeyan@cluster0.pe8ib.mongodb.net/live-interview"
+mongoose.connect(uri)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -226,9 +227,9 @@ class Chatbot {
             model: "llama3-8b-8192",
         });
 
-        const { score, section } = await this.determineScoreAndSection(previousUserMsg, previousAiResponse);  
-        // const score = 7;
-        // const section  = 'general';  
+        // const { score, section } = await this.determineScoreAndSection(previousUserMsg, previousAiResponse);  
+        const score = 7;
+        const section  = 'general';  
 
 
         if (completion.choices && completion.choices[0] && completion.choices[0].message) {
