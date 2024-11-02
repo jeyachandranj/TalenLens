@@ -367,55 +367,77 @@ class Chatbot {
     }
 
 
-    async textToSpeech(text) {
+    async storeAudioFile(text) {
         let visemes = [];
         const fileName = `${Math.random().toString(36).substring(7)}.wav`;
-        const audioFilePath = path.join(__dirname, '..', 'client/public/temp', 'audio', fileName);
-        console.log("path", audioFilePath);
+        const audioFilePath = path.join(__dirname,  'public/temp/audio', fileName);
+        console.log("Audio file path:", audioFilePath);
     
         const audioConfig = sdk.AudioConfig.fromAudioFileOutput(audioFilePath);
         const synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, audioConfig);
-        
+    
         synthesizer.visemeReceived = (s, e) => {
             visemes.push({ visemeId: e.visemeId, audioOffset: e.audioOffset / 10000 });
         };
     
         const ssml = `<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${this.speechConfig.speechSynthesisVoiceName}">${text}</voice></speak>`;
     
-        await new Promise((resolve, reject) => {
-            synthesizer.speakSsmlAsync(ssml, (result) => {
+        return new Promise((resolve, reject) => {
+            synthesizer.speakSsmlAsync(ssml, async (result) => {
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-                    resolve();
+                    synthesizer.close();
+                    // Return the audio file path and visemes for further processing
+                    resolve({ audioFilePath, visemes });
                 } else {
                     reject(result);
                 }
             });
         });
+    }
     
-        synthesizer.close();
-        console.log("jeyan");
-        let response=" ";
+    async sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     
+    async uploadAudioFile(audioFilePath) {
+        let url = "";
         try {
-            const formData = new FormData(); // Create an instance of FormData
-            formData.append('audioFile', fs.createReadStream(audioFilePath)); // Append the audio file
+            const formData = new FormData();
+            formData.append('audioFile', fs.createReadStream(audioFilePath));
     
-             response = await axios.post('http://localhost:3000/upload-audio', formData, {
+            // Send the POST request to your API
+            const response = await axios.post('http://localhost:3000/upload-audio', formData, {
                 headers: {
-                    ...formData.getHeaders(), // Include necessary headers
-                    'Content-Type': 'multipart/form-data' // Ensure the content type is set
+                    ...formData.getHeaders(), // Automatically set the necessary headers
                 }
             });
-            console.log("jeyan");
-
     
             console.log('Upload response:', response.data);
+            url = response.data.url;
         } catch (error) {
             console.error('Error uploading audio file:', error);
+            throw new Error('Failed to upload audio file.');
         }
     
-        return { audioFilePath:  response.data.url, visemes: visemes };
+        return url;
     }
+    
+    async textToSpeech(text) {
+        // First, create the audio file and retrieve its path and visemes
+        const { audioFilePath, visemes } = await this.storeAudioFile(text);
+        
+        // Sleep for 100ms before uploading the audio file
+        await this.sleep(50);
+    
+        // Now, upload the audio file
+        const audioUrl = await this.uploadAudioFile(audioFilePath);
+    
+        // Return the final result including the uploaded URL and visemes
+        return { audioFilePath:audioUrl, visemes:visemes};
+    }    
+
+
+    
 
     // async textToSpeech(text) {
     //     let visemes = [];

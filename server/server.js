@@ -132,6 +132,12 @@ const storage = multer.diskStorage({
 app.use(express.json());
 app.use(bodyParser.json());
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).send('Something broke!');
+});
+
+
 const port = 3000;
 
 // AWS S3 configuration
@@ -145,7 +151,7 @@ const s3 = new AWS.S3();
 
 // Configure Multer for file uploads
 const storageaudio = multer.memoryStorage(); // Store files in memory
-const audio = multer({ storageaudio });
+const audio = multer({ storage: storageaudio });
 
 // Define the endpoint for audio file upload
 app.post('/upload-audio', audio.single('audioFile'), async (req, res) => {
