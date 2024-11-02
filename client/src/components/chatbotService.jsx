@@ -3,7 +3,9 @@ import { io } from "socket.io-client";
 class ChatbotService {
 	constructor() {
 		//this.socket = io();
-		 this.socket = io("http://localhost:3000");
+		//  this.socket = io("http://localhost:3000");
+		this.socket = io("https://ai-interview-talenlens.onrender.com");
+
 
 	}
 

@@ -65,7 +65,7 @@ const UploadResume = () => {
     formData.append("fileName", fileName); // Add the file name to the form data
   
     try {
-      const response = await fetch("http://localhost:3000/upload", {
+      const response = await fetch("https://ai-interview-talenlens.onrender.com/upload", {
         method: "POST",
         body: formData,
       });

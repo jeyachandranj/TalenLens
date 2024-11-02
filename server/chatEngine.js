@@ -406,7 +406,7 @@ class Chatbot {
             formData.append('audioFile', fs.createReadStream(audioFilePath));
     
             // Send the POST request to your API
-            const response = await axios.post('http://localhost:3000/upload-audio', formData, {
+            const response = await axios.post('https://ai-interview-talenlens.onrender.com/upload-audio', formData, {
                 headers: {
                     ...formData.getHeaders(), // Automatically set the necessary headers
                 }
