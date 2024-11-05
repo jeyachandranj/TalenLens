@@ -50,7 +50,7 @@ class Chatbot {
         dotenv.config();
         this.socket_id = null;
         this.apiKeys = [
-            "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",
+            "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",
             "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",
             "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",
             "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",
