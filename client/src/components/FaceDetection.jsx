@@ -67,7 +67,7 @@ function FaceDetection() {
           "faceAuth",
           JSON.stringify({ status: true, account: tempAccount })
         );
-        navigate("/InterviewInstruction ", { replace: true });
+        navigate("/protected", { replace: true });
       }
       navigate("/InterviewInstruction ", { replace: true });
       
