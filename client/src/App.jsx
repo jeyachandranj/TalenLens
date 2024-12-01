@@ -10,7 +10,8 @@ import ResumeUpload from './pages/ResumeUpload'
 import InterviewInstruction from './pages/InterviewInstruction';
 import Start from "./pages/Interview"
 import ObjectDetection from './components/ObjectDetection';
-
+import InterviewEnd from './pages/InterviewEnd';
+import ProfilePage from './pages/ProfilePage';
 function App() {
   const location = useLocation();
   const [resumeData, setResumeData] = useState(null);
@@ -24,6 +25,8 @@ function App() {
         <Route path="/InterviewInstruction" element={<InterviewInstruction/>}/>
         <Route path="/objectDetection" element={<ObjectDetection/>}/>
         <Route path="/interview" element={<Start/>}/>
+        <Route path="/interviewend" element={<InterviewEnd/>}/>
+        <Route path="/profilepage" element={<ProfilePage/>} />
         <Route path="/" element={<Layout />}>
           <Route path="/uploadface" element={<UserSelect />} />
           <Route path="face" element={<FaceDetection />} />
