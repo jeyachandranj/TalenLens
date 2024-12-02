@@ -51,8 +51,9 @@ const PhoneDetectionComponent = ({ onPhoneDetect }) => {
     position: 'absolute',
     bottom: '20px',
     left: '30px',
-    width: '200px',
-    height: '200px',
+    width: '150px',
+    height: '150px',
+    marginLeft:'40px',
     borderRadius: '50%',
     border: '3px solid #33cc33', // Default to green border, changes in parent
     overflow: 'hidden',
@@ -60,7 +61,16 @@ const PhoneDetectionComponent = ({ onPhoneDetect }) => {
 
   return (
     <div style={webcamStyle}>
-      <video ref={videoRef} style={{ width: '200px', height: '220px',marginBottom:"100px",    borderRadius: '80%',}} />
+<video
+  ref={videoRef}
+  style={{
+    width: '100px', 
+    height: '100px', 
+    marginBottom: '100px',
+    borderRadius: '50%', 
+  }}
+/>
+
     </div>
   );
 };

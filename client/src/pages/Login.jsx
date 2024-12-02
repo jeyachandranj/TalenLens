@@ -5,19 +5,18 @@ import "./Login.css";
 import CenterImage from "../assets/main.png";
 import Logo from "../assets/logo.png";
 import { FaBars } from "react-icons/fa";
+import GoogleButton from "react-google-button"; // Import the GoogleButton component
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scale, setScale] = useState(1.9);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const provider = new GoogleAuthProvider();
 
   // Handle Google Sign-In
   const handleGoogleSignIn = async () => {
-    setIsSigningIn(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -32,8 +31,6 @@ const LandingPage = () => {
     } catch (error) {
       setError(error.message);
       console.error("Google sign-in error:", error);
-    } finally {
-      setIsSigningIn(false);
     }
   };
 
@@ -62,8 +59,8 @@ const LandingPage = () => {
             style={{
               width: "100px",
               height: "80px",
-              marginTop:"20px",
-              marginLeft:"20px",
+              marginTop: "20px",
+              marginLeft: "20px",
               transform: `scale(${scale})`,
               transition: "transform 0.3s ease",
             }}
@@ -85,12 +82,13 @@ const LandingPage = () => {
       </header>
 
       <div className="main-content">
-        <img src={CenterImage} alt="centered content" className="center-image" />
-        <button onClick={handleGoogleSignIn} disabled={isSigningIn} className="googlebutton mt-4 rounded-pill">
-          {isSigningIn ? "Signing in..." : <b>Sign in with Google</b>}
-        </button>
-        {error && <p className="error-text">{error}</p>}
-      </div>
+  <img src={CenterImage} alt="centered content" className="center-image" />
+  <div className="google-button-container">
+    <GoogleButton onClick={handleGoogleSignIn} />
+  </div>
+  {error && <p className="error-text">{error}</p>}
+</div>
+
     </div>
   );
 };

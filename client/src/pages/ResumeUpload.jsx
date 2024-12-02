@@ -4,6 +4,8 @@ import resumupload from "../assets/resumupload.png";
 import TopBar from "./TopBar";
 import { useNavigate } from "react-router-dom";
 import { getDocument } from "pdfjs-dist/build/pdf";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the styles for toast
 
 const UploadResume = () => {
   const [name, setName] = useState("");
@@ -52,7 +54,9 @@ const UploadResume = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Please upload a resume!");
+      toast.error("Please upload a resume!", {
+        autoClose: 800, // Auto-close after 1000 ms (1 second)
+      });
       return;
     }
   
@@ -76,14 +80,18 @@ const UploadResume = () => {
         console.log("Uploaded file name:", result.fileName); // Log the uploaded file name
         navigate("/uploadface");
       } else {
-        alert("File upload failed.");
+        toast.error("File upload failed.", {
+          autoClose: 800, // Auto-close after 1000 ms (1 second)
+        });
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert("An error occurred during file upload.");
+      toast.error("An error occurred during file upload.", {
+        autoClose: 800, // Auto-close after 1000 ms (1 second)
+      });
     }
   };
-  
+
   return (
     <>
       <div style={{ marginRight: "400px" }}>
@@ -132,6 +140,9 @@ const UploadResume = () => {
           </div>
         </div>
       </div>
+
+      {/* ToastContainer to show toast notifications with auto-close time */}
+      <ToastContainer autoClose={800} />
     </>
   );
 };

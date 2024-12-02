@@ -135,9 +135,14 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
 
   useEffect(() => {
     initializeSpeechRecognition();
+  
+    return () => {
+      if (recognition.current) {
+        recognition.current.stop();
+        recognition.current = null;
+      }
+    };
   }, []);
-
-
 
 
   const debouncedSendMessage = debounce((message) => {
@@ -254,12 +259,12 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
 
 
   return (
-    <div className="chatbotInputWrap" style={{ width: "300px" }}>
+    <div className="chatbotInputWrap">
       {/* <div className="stage-info" style={{ position: "absolute", top: "10px", right: "10px" }}>
         <p>Current Stage: {currentStage}</p>
         <p>Completed Stages: {completedStages}</p>
       </div> */}
-
+  
       {/* {popupVisible && (
         <div className="popup" style={{ color: "black" }}>
           <div className="popup-content">
@@ -267,7 +272,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
           </div>
         </div>
       )} */}
-
+  
       {chunks.length > 0 && (
         <div
           className="chatbotResponse"
@@ -287,28 +292,39 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
         <section className="chatbotInputContainer">
           <div className="chatbotInput" data-listening={listening}>
             <div className="chatbotInput_container">
-              <form onSubmit={(e) => e.preventDefault()} className="inputForm" style={{ marginLeft: "200px",marginBottom:"50px", width: "1400px" }}>
-              <div className="microphoneIcon">
-                  <button type="button" onClick={toggleListening} className="mic-button" style={{backgroundColour:'black',marginRight:"100px"}}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                   fill="currentColor"
-                 className="bi bi-mic-fill"
+              <form onSubmit={(e) => e.preventDefault()} className="inputForm" style={{ marginLeft: "200px", marginBottom: "100px"}}>
+                <div className="microphoneIcon" >
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    className={`mic-button ${listening ? 'mic-on' : ''}`}
+                    style={{
+                      backgroundColor: listening ? 'red' : 'black',
+                      borderRadius: '100%',
+                      marginBottom:'200px',
+                      marginRight:'550px'
+                    
+                
+          
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                      className="bi bi-mic-fill"
                       viewBox="0 0 16 16"
-                        style={{
-                         backgroundColor: 'black', // Add background color
-                          borderRadius: '100%',     // Make it circular
-                                 // Space between icon and background
-                              }}
-                            >
+                      style={{
+                        color: "white",
+                      }}
+                    >
                       <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"></path>
                       <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"></path>
                     </svg>
                   </button>
                 </div>
-
+  
                 <textarea
                   ref={inputRef}
                   value={speechText}
@@ -316,43 +332,36 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
                   style={{
                     color: "black",
                     backgroundColor: "white",
-                    fontSize: "25px",
-                    width: "1200px",
-                    marginLeft:"150px",
-                    height:"150px",
-                    maxHeight: "300px",
-                    marginTop:"200px",
+                    fontSize: "18px",
+                    width: "360px",
+                    height: "100px",
+                    maxHeight: "200px",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: listening ? "3px solid red" : "2px solid #ccc",
+                    boxShadow: listening ? "0 0 10px red" : "none",
+                    resize: "none",
+                    transition: "border 0.3s ease, box-shadow 0.3s ease",
                     overflow: "hidden",
-
                   }}
                   placeholder="Speak or type a message..."
                 />
               </form>
             </div>
           </div>
-
+  
           {!visible && (
-            <div className="timerDisplay" style={{ marginLeft: "300px" ,marginBottom:"120px"}}>
+            <div className="timerDisplay" style={{ marginLeft: "300px", marginBottom: "120px" }}>
               {/* <p className="timerText">{formatTime(timer)}</p> */}
             </div>
           )}
-
-
-
-          <div className="chatbotSettings" data-visible={visible}>
-            <SettingsDisplay
-              settings={settings}
-              setSettings={setSettings}
-              visible={visible}
-              setVisible={setVisible}
-            />
-          </div>
         </section>
       ) : (
         <></>
       )}
     </div>
   );
+  
 };
 
 export default UserInput;

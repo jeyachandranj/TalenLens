@@ -10,6 +10,7 @@ import ResumeUpload from './pages/ResumeUpload'
 import InterviewInstruction from './pages/InterviewInstruction';
 import Start from "./pages/Interview"
 import ObjectDetection from './components/ObjectDetection';
+import SettingsDisplay from './components/SettingsDisplay';
 
 function App() {
   const location = useLocation();
@@ -23,12 +24,14 @@ function App() {
         <Route path="/interview1" element={<Advance />} />
         <Route path="/InterviewInstruction" element={<InterviewInstruction/>}/>
         <Route path="/objectDetection" element={<ObjectDetection/>}/>
-        <Route path="/interview" element={<Start/>}/>
+        <Route path="/Interview" element={<Start/>}/>
         <Route path="/" element={<Layout />}>
           <Route path="/uploadface" element={<UserSelect />} />
           <Route path="face" element={<FaceDetection />} />
           <Route path="protected" element={<Protected />} />
         </Route>
+        <Route path="/settingsDisplay" element={<SettingsDisplay/>}/>
+
       </Routes>
     </div>
   );
