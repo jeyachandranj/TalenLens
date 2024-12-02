@@ -76,6 +76,7 @@ const UploadResume = () => {
   
       const result = await response.json();
       if (response.ok) {
+        toast.success("Resume uploaded successfully!"); // Success toast
         console.log("Resume uploaded:", file);
         console.log("Uploaded file name:", result.fileName); // Log the uploaded file name
         navigate("/uploadface");
@@ -91,6 +92,23 @@ const UploadResume = () => {
       });
     }
   };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const handleDrop = (e) => {
+     e.preventDefault();
+     e.stopPropagation();
+     const file = e.dataTransfer.files[0];
+     if (file && file.type === "application/pdf") {
+       setFile(file);
+       setFileName(file.name);
+       extractTextFromPDF(file);
+     } else {
+       toast.error("Please upload a PDF file.");
+     }
+   };
+    
 
   return (
     <>
@@ -121,11 +139,13 @@ const UploadResume = () => {
               </div>
               <div className="form-group">
                 <label>Resume</label>
-                <div className="upload-box">
+                <div className="upload-box"onDragOver={handleDragOver} onDrop={handleDrop} >
                   <input
                     type="file"
                     accept=".pdf"
+                    
                     onChange={handleFileChange}
+                    
                     className="file-input"
                   />
                   <div className="upload-text">

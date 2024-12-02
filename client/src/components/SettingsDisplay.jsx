@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import TopBar from '../pages/TopBar';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SettingsDisplay = ({ settings, setSettings, visible, setVisible }) => {
   const formRef = useRef(null);
@@ -12,7 +14,7 @@ const SettingsDisplay = ({ settings, setSettings, visible, setVisible }) => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden && isTabLockActive) {
-        alert("You cannot switch tabs after saving your settings.");
+        toast.info("You cannot switch tabs after saving your settings.");
         setTabSwitchCount((prevCount) => prevCount + 1);
       }
     };
@@ -63,10 +65,17 @@ const SettingsDisplay = ({ settings, setSettings, visible, setVisible }) => {
       return false;
     }
   }
+  const handleStart = () => {
+    toast.success("Interview was started!");
+    localStorage.setItem("interviewStarted", true); // Store interview state
+    setVisible(false);
+    navigate("/Interview"); // Navigate to Interview route programmatically
+  };
 
   return (
     <>
     <div style={{ position: "fixed", top: 0, left: 0, width: "200px", zIndex: 1000 }}>
+    <ToastContainer />
         <TopBar />
       </div>
       <div
@@ -151,6 +160,8 @@ const SettingsDisplay = ({ settings, setSettings, visible, setVisible }) => {
           >
             <Link
               to="/Interview"
+              onClick={handleStart}
+            
               className="inline-flex items-center rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600"
               style={{
                 fontSize: "14px", // Smaller font size

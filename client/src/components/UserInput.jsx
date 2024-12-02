@@ -325,27 +325,29 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
                   </button>
                 </div>
   
-                <textarea
-                  ref={inputRef}
-                  value={speechText}
-                  onChange={handleInputChange}
-                  style={{
-                    color: "black",
-                    backgroundColor: "white",
-                    fontSize: "18px",
-                    width: "360px",
-                    height: "100px",
-                    maxHeight: "200px",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    border: listening ? "3px solid red" : "2px solid #ccc",
-                    boxShadow: listening ? "0 0 10px red" : "none",
-                    resize: "none",
-                    transition: "border 0.3s ease, box-shadow 0.3s ease",
-                    overflow: "hidden",
-                  }}
-                  placeholder="Speak or type a message..."
-                />
+            <textarea
+              ref={inputRef}
+              value={speechText}
+              onChange={handleInputChange} 
+              
+              style={{
+                color: "black",
+                backgroundColor: "white",
+                fontSize: "18px",
+                width: "360px",
+                height: "100px",
+                maxHeight: "200px",
+                padding: "10px",
+                borderRadius: "8px",
+                border: listening ? "3px solid red" : "2px solid #ccc",
+                boxShadow: listening ? "0 0 10px red" : "none",
+                resize: "none",
+                transition: "border 0.3s ease, box-shadow 0.3s ease",
+                overflow: "hidden",
+              }}
+              placeholder="Speak or type a message..."
+            />
+
               </form>
             </div>
           </div>

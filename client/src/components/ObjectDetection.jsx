@@ -64,12 +64,13 @@ const PhoneDetectionComponent = ({ onPhoneDetect }) => {
 <video
   ref={videoRef}
   style={{
-    width: '100px', 
-    height: '100px', 
-    marginBottom: '100px',
-    borderRadius: '50%', 
+    width: '150px', // Must match height
+    height: '150px', // Must match width
+    borderRadius: '50%', // Makes it circular
+    objectFit: 'cover', // Ensures content fits inside the circle
   }}
 />
+
 
     </div>
   );
