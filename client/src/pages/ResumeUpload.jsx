@@ -9,24 +9,48 @@ import "react-toastify/dist/ReactToastify.css"; // Import the styles for toast
 
 const UploadResume = () => {
   const [name, setName] = useState("");
+  const [role, setRole] = useState("Student"); 
+  const [additionalInfo, setAdditionalInfo] = useState("");
   const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState(""); // State to hold the file name
-  const [pdfText, setPdfText] = useState(""); // State to hold the PDF text
+  const [fileName, setFileName] = useState(""); 
+  const [pdfText, setPdfText] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedName = localStorage.getItem("name");
-    if (storedName) {
-      setName(storedName); // Automatically set name from local storage
-    }
+    const storedRole = localStorage.getItem("role");
+    const storedAdditionalInfo = localStorage.getItem("additionalInfo");
+    const storedFileName = localStorage.getItem("fileName");
+
+    if (storedName) setName(storedName);
+    if (storedRole) setRole(storedRole);
+    if (storedAdditionalInfo) setAdditionalInfo(storedAdditionalInfo);
+    if (storedFileName) setFileName(storedFileName);
   }, []);
+
+ 
+  useEffect(() => {
+    localStorage.setItem("name", name);
+  }, [name]);
+
+  useEffect(() => {
+    localStorage.setItem("role", role);
+  }, [role]);
+
+  useEffect(() => {
+    localStorage.setItem("additionalInfo", additionalInfo);
+  }, [additionalInfo]);
+
+  useEffect(() => {
+    localStorage.setItem("fileName", fileName);
+  }, [fileName]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setFileName(selectedFile.name); // Set the file name in state
-      extractTextFromPDF(selectedFile); // Extract text when a file is selected
+      setFileName(selectedFile.name); 
+      extractTextFromPDF(selectedFile);
     }
   };
 
@@ -40,15 +64,15 @@ const UploadResume = () => {
       for (let i = 0; i < pdf.numPages; i++) {
         const page = await pdf.getPage(i + 1);
         const content = await page.getTextContent();
-        const pageText = content.items.map(item => item.str).join(" ");
-        text += pageText + " "; // Accumulate text from all pages
+        const pageText = content.items.map((item) => item.str).join(" ");
+        text += pageText + " "; 
       }
 
-      setPdfText(text.trim()); // Set the PDF text in state
+      setPdfText(text.trim()); 
       console.log("Extracted PDF Text:", pdfText);
     };
 
-    fileReader.readAsArrayBuffer(file); // Read the file as an array buffer
+    fileReader.readAsArrayBuffer(file); 
   };
 
   const handleSubmit = async (e) => {
@@ -60,26 +84,51 @@ const UploadResume = () => {
       return;
     }
   
-    if (name) {
-      localStorage.setItem("name", name); // Store name in local storage
-    }
-  
     const formData = new FormData();
     formData.append("resume", file);
-    formData.append("fileName", fileName); // Add the file name to the form data
+    formData.append("fileName", fileName);
+    formData.append("role", role);
+    formData.append("additionalInfo", additionalInfo);
   
     try {
-      const response = await fetch("https://ai-interview-talenlens.onrender.com/upload", {
+      const uploadResponse = await fetch("https://ai-interview-talenlens.onrender.com/upload", {
         method: "POST",
         body: formData,
       });
   
+
       const result = await response.json();
       if (response.ok) {
         toast.success("Resume uploaded successfully!"); // Success toast
+
+      const uploadResult = await uploadResponse.json();
+      if (uploadResponse.ok) {
+        const email = localStorage.getItem("email");
+
         console.log("Resume uploaded:", file);
-        console.log("Uploaded file name:", result.fileName); // Log the uploaded file name
-        navigate("/uploadface");
+        console.log("Uploaded file name:", uploadResult.fileName); 
+        const userData = {
+          name: name,
+          email:email,
+          role: role,
+          additionalInfo: additionalInfo
+        };
+  
+        const response = await fetch("http://localhost:3000/upload-resume", { // Make sure this matches your backend URL
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
+        });
+  
+        const result = await response.json();
+        if (response.ok) {
+          console.log("User data saved:", result.user);
+          navigate("/uploadface");
+        } else {
+          alert("Failed to save user data.");
+        }
       } else {
         toast.error("File upload failed.", {
           autoClose: 800, // Auto-close after 1000 ms (1 second)
@@ -92,6 +141,7 @@ const UploadResume = () => {
       });
     }
   };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -108,7 +158,7 @@ const UploadResume = () => {
        toast.error("Please upload a PDF file.");
      }
    };
-    
+
 
   return (
     <>
@@ -119,10 +169,7 @@ const UploadResume = () => {
         <h2>UPLOAD RESUME</h2>
         <div className="upload-content">
           <div className="upload-image">
-            <img
-              src={resumupload}
-              alt="Upload Illustration"
-            />
+            <img src={resumupload} alt="Upload Illustration" />
           </div>
           <div className="upload-form">
             <h3>ENTER THE DETAILS</h3>
@@ -134,6 +181,33 @@ const UploadResume = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Role</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="Student">Student</option>
+                  <option value="Employee">Employee</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>
+                  {role === "Student" ? "College Name" : "Last Worked Company"}
+                </label>
+                <input
+                  type="text"
+                  value={additionalInfo}
+                  onChange={(e) => setAdditionalInfo(e.target.value)}
+                  placeholder={
+                    role === "Student"
+                      ? "Enter your college name"
+                      : "Enter your last company name"
+                  }
                   required
                 />
               </div>
@@ -154,8 +228,11 @@ const UploadResume = () => {
                     Supported formats: PDF
                   </div>
                 </div>
+                {fileName && <p className="uploaded-file-name">Uploaded: {fileName}</p>}
               </div>
-              <button type="submit" className="upload-btn">Upload</button>
+              <button type="submit" className="upload-btn">
+                Upload
+              </button>
             </form>
           </div>
         </div>

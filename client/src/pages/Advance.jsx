@@ -20,23 +20,45 @@ function App() {
   const [showFullscreenModal, setShowFullscreenModal] = useState(false);
 
   const handleFullscreenChange = () => {
-    // Check if the document is in fullscreen mode
     setIsFullscreen(!!document.fullscreenElement);
   };
 
   const requestFullscreen = () => {
-    const elem = document.documentElement; // Use the whole document
+    const elem = document.documentElement; 
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) { // Firefox
+    } else if (elem.mozRequestFullScreen) { 
       elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+    } else if (elem.webkitRequestFullscreen) { 
       elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { // IE/Edge
+    } else if (elem.msRequestFullscreen) { 
       elem.msRequestFullscreen();
     }
     setShowFullscreenModal(false); 
   };
+  const [isTabInactive, setIsTabInactive] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      const message = "Are you sure you want to leave? Your work might be lost.";
+      event.returnValue = message; 
+      return message; 
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsTabInactive(true);
+        alert("Warning: You switched to another tab!"); 
+      } else {
+        setIsTabInactive(false);
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -61,12 +83,14 @@ function App() {
   }, [isFullscreen]);
 
   return (
+
     <div className="main-container" data-chatbot-ready={isChatbotReady}>
-        {/* <Modal 
+        <Modal 
+
           isOpen={showFullscreenModal} 
           onClose={() => setShowFullscreenModal(false)} 
           onConfirm={requestFullscreen} 
-        /> */}
+        />
       {!isChatbotReady && (
         <div className="loading-overlay">hi hello how are you
           <img src = {logo} alt="Loading..." className="loading-gif" />

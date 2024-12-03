@@ -181,7 +181,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         if (listening) {
-          stopListening(); 
+          stopListening();
         }
         if (speechText !== "") {
           debouncedSendMessage(speechText);
@@ -189,7 +189,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
         }
       }
     };
-  
+
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
@@ -236,7 +236,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
   }, []);
 
 
-  
+
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -292,6 +292,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
         <section className="chatbotInputContainer">
           <div className="chatbotInput" data-listening={listening}>
             <div className="chatbotInput_container">
+
               <form onSubmit={(e) => e.preventDefault()} className="inputForm" style={{ marginLeft: "200px", marginBottom: "100px"}}>
                 <div className="microphoneIcon" >
                   <button
@@ -308,6 +309,11 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
           
                     }}
                   >
+
+              <form onSubmit={(e) => e.preventDefault()} className="inputForm" style={{ marginLeft: "200px", marginBottom: "50px", width: "1400px" }}>
+                <div className="microphoneIcon">
+                  <button type="button" onClick={toggleListening} className="mic-button" style={{ backgroundColour: 'black', marginRight: "100px" }}>
+
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -316,7 +322,13 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
                       className="bi bi-mic-fill"
                       viewBox="0 0 16 16"
                       style={{
+
                         color: "white",
+
+                        backgroundColor: 'black', // Add background color
+                        borderRadius: '100%',     // Make it circular
+                        // Space between icon and background
+
                       }}
                     >
                       <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"></path>
@@ -347,7 +359,32 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
               }}
               placeholder="Speak or type a message..."
             />
+                <textarea
+                  onPaste={(e) => {
+                    e.preventDefault()
+                    return false;
+                  }}
+                  onCopy={(e) => {
+                    e.preventDefault()
+                    return false;
+                  }}
+                  ref={inputRef}
+                  value={speechText}
+                  onChange={handleInputChange}
+                  style={{
+                    color: "black",
+                    backgroundColor: "white",
+                    fontSize: "25px",
+                    width: "1200px",
+                    marginLeft: "150px",
+                    height: "150px",
+                    maxHeight: "300px",
+                    marginTop: "200px",
+                    overflow: "hidden",
 
+                  }}
+                  placeholder="Speak or type a message..."
+                />
               </form>
             </div>
           </div>

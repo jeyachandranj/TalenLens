@@ -11,6 +11,7 @@
     "leva": "^0.9.35",
     "microsoft-cognitiveservices-speech-sdk": "^1.32.0",
     "module": "^1.1.0",
+    "mongodb": "^6.11.0",
     "mongoose": "^8.4.4",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.3.2",
