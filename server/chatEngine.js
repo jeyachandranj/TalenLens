@@ -8,8 +8,8 @@ const fs = require("fs");
 const request = require("request");
 const mongoose = require("mongoose");
 const AWS = require('aws-sdk');
-const FormData = require('form-data'); // Import the form-data package
-const axios = require('axios'); // Import axios
+const FormData = require('form-data');
+const axios = require('axios');
 
 
 const Groq = require("groq-sdk");
@@ -38,9 +38,9 @@ const s3 = new AWS.S3({
 });
 
 
-const MAX_INTERVIEW_DURATION = 300; // Total interview time in seconds (e.g., 30 minutes)
-const STAGE_DURATION = 60; // Each stage duration in seconds (e.g., 5 minutes)
-const PASSING_SCORE_THRESHOLD = 9; // Minimum average score to pass each stag
+const MAX_INTERVIEW_DURATION = 300;
+const STAGE_DURATION = 60;
+const PASSING_SCORE_THRESHOLD = 9;
 const NUMBER_OF_STAGES = Math.floor(MAX_INTERVIEW_DURATION / STAGE_DURATION);
 const QUESTIONS_PER_STAGE = 5;
 
@@ -56,8 +56,8 @@ class Chatbot {
             "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",
             "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"
         ];
-        
-        this.currentIndex = 0; 
+
+        this.currentIndex = 0;
         this.groq = this.initializeGroq();
 
         if (public_path) {
@@ -90,7 +90,7 @@ class Chatbot {
         });
     }
 
-    async initialize( settings,round,name, socket_id) {
+    async initialize( settings,round,name,filename,socket_id) {
         this.socket_id = socket_id;
 
         this.speechConfig.speechSynthesisVoiceName = "en-US-RogerNeural";
@@ -99,8 +99,8 @@ class Chatbot {
 
         this.speechAudioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
         this.speechRecognizer = new sdk.SpeechRecognizer(this.speechConfig, this.speechAudioConfig);
-        const resumeText = await this.downloadResume();
-
+        const resumeText = await this.downloadResume(filename);
+        console.log(name+" *"+filename);
         this.groqHistory = [];
         this.messages = [];
         let ai_content = " ";
@@ -134,32 +134,32 @@ class Chatbot {
         }
     }
 
-    async downloadResume() {
+    async downloadResume(filename) {
         return new Promise((resolve, reject) => {
             let resume_text = "hi";
-            
-            const resumePath = path.join(this.publicDir, "temp", "resume.pdf");
-    
+
+            const resumePath = path.join(this.publicDir, "uploads", filename);
+
             if (!fs.existsSync(resumePath)) {
                 reject("File not found: resume.pdf");
                 return;
             }
-    
+
             const buffer = fs.readFileSync(resumePath);
             const options = {};
-    
+
             pdfExtract.extractBuffer(buffer, options, (err, data) => {
                 if (err) {
                     console.error("Error extracting text from PDF:", err);
                     reject(err);
                     return;
                 }
-    
+
                 const contentArray = data.pages[0].content;
                 for (let i = 0; i < contentArray.length; i++) {
                     resume_text += contentArray[i].str + " ";
                 }
-    
+
                 resolve(resume_text);
                 console.log("---------------------------------------------------------------------------------------");
                 console.log("Resume text:", resume_text);
@@ -215,24 +215,24 @@ class Chatbot {
         }
     }
 
-    
+
 
     async chat(userInput, duration, interviewStartTime, name) {
         this.messages.push({
             role: "user",
             content: userInput,
-        });        
+        });
 
 
-        const lastMessage = await Chat.findOne().sort({ createdAt: -1 }).lean();  
+        const lastMessage = await Chat.findOne().sort({ createdAt: -1 }).lean();
 
-        let previousUserMsg = '';  
-        let previousAiResponse = '';  
+        let previousUserMsg = '';
+        let previousAiResponse = '';
 
-        if (lastMessage) {  
-            previousUserMsg = lastMessage.user_msg;  
+        if (lastMessage) {
+            previousUserMsg = lastMessage.user_msg;
             previousAiResponse = lastMessage.ai;
-        }  
+        }
 
 
         const completion = await this.groq.chat.completions.create({
@@ -240,9 +240,9 @@ class Chatbot {
             model: "llama3-8b-8192",
         });
 
-        // const { score, section } = await this.determineScoreAndSection(previousUserMsg, previousAiResponse);  
+        // const { score, section } = await this.determineScoreAndSection(previousUserMsg, previousAiResponse);
         const score = 7;
-        const section  = 'general';  
+        const section  = 'general';
 
 
         if (completion.choices && completion.choices[0] && completion.choices[0].message) {
@@ -274,7 +274,7 @@ class Chatbot {
 
                 return aiResponse;
 
-           
+
         } else {
             console.log("Invalid completion format:", completion);
             throw new Error("Invalid completion format");
@@ -282,13 +282,13 @@ class Chatbot {
 
     }
 
-    
 
-    
+
+
 
     async evaluateInterviewProgress(interviewDuration, name) {
         let scoreAvg = 0;
-    
+
         let elapsedTime = interviewDuration;
         elapsedTime = Math.floor(elapsedTime / 1000);
 
@@ -298,46 +298,46 @@ class Chatbot {
             const results = await Chat.find({ name: name });
             const n = results.length;
             console.log("number",n);
-    
+
             if (n === 0) {
                 return { };
             }
-    
+
             let totalScore = 0;
-            let totalQuestions = 0; 
-    
+            let totalQuestions = 0;
+
             for (let i = 0; i < n; i++) {
                 totalScore += results[i].score;
                 totalQuestions += 1;
             }
             scoreAvg = totalScore / n;
-    
+
             completedStage = Math.floor(totalQuestions / QUESTIONS_PER_STAGE);
-            
-            currentStage = completedStage + 1; 
-            currentStage = Math.min(currentStage, NUMBER_OF_STAGES); 
-    
+
+            currentStage = completedStage + 1;
+            currentStage = Math.min(currentStage, NUMBER_OF_STAGES);
+
         } catch (error) {
             console.error("Error evaluating interview progress:", error);
             return res.status(500).json({ error: "An error occurred while evaluating the interview progress." });
         }
-    
-        let passed = scoreAvg >= PASSING_SCORE_THRESHOLD; 
-    
+
+        let passed = scoreAvg >= PASSING_SCORE_THRESHOLD;
+
         const interviewCompleted = (completedStage >= NUMBER_OF_STAGES);
-    
+
         return {
-            currentStage,   
+            currentStage,
             completedStage,          // The current stage the interviewee is in
             status: passed ? "pass" : "fail", // Overall pass/fail status based on average score
             interviewCompleted,       // Whether the interview has been fully completed
         };
     }
-    
 
-    
-    
-    
+
+
+
+
 
 
     async exportChat() {
@@ -372,16 +372,16 @@ class Chatbot {
         const fileName = `${Math.random().toString(36).substring(7)}.wav`;
         const audioFilePath = path.join(__dirname,  'public/temp/audio', fileName);
         console.log("Audio file path:", audioFilePath);
-    
+
         const audioConfig = sdk.AudioConfig.fromAudioFileOutput(audioFilePath);
         const synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, audioConfig);
-    
+
         synthesizer.visemeReceived = (s, e) => {
             visemes.push({ visemeId: e.visemeId, audioOffset: e.audioOffset / 10000 });
         };
-    
+
         const ssml = `<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${this.speechConfig.speechSynthesisVoiceName}">${text}</voice></speak>`;
-    
+
         return new Promise((resolve, reject) => {
             synthesizer.speakSsmlAsync(ssml, async (result) => {
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
@@ -394,50 +394,50 @@ class Chatbot {
             });
         });
     }
-    
+
     async sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
+
     async uploadAudioFile(audioFilePath) {
         let url = "";
         try {
             const formData = new FormData();
             formData.append('audioFile', fs.createReadStream(audioFilePath));
-    
+
             // Send the POST request to your API
             const response = await axios.post('https://ai-interview-talenlens.onrender.com/upload-audio', formData, {
                 headers: {
                     ...formData.getHeaders(), // Automatically set the necessary headers
                 }
             });
-    
+
             console.log('Upload response:', response.data);
             url = response.data.url;
         } catch (error) {
             console.error('Error uploading audio file:', error);
             throw new Error('Failed to upload audio file.');
         }
-    
+
         return url;
     }
-    
+
     async textToSpeech(text) {
         // First, create the audio file and retrieve its path and visemes
         const { audioFilePath, visemes } = await this.storeAudioFile(text);
-        
+
         // Sleep for 100ms before uploading the audio file
         await this.sleep(50);
-    
+
         // Now, upload the audio file
         const audioUrl = await this.uploadAudioFile(audioFilePath);
-    
+
         // Return the final result including the uploaded URL and visemes
         return { audioFilePath:audioUrl, visemes:visemes};
-    }    
+    }
 
 
-    
+
 
     // async textToSpeech(text) {
     //     let visemes = [];
@@ -445,13 +445,13 @@ class Chatbot {
     //     const localFilePath = path.join(__dirname, '..', 'client/public/temp', 'audio', fileName);
     //     const audioConfig = sdk.AudioConfig.fromAudioFileOutput(localFilePath);
     //     const synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, audioConfig);
-        
+
     //     synthesizer.visemeReceived = (s, e) => {
     //         visemes.push({ visemeId: e.visemeId, audioOffset: e.audioOffset / 10000 });
     //     };
-    
+
     //     const ssml = `<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${this.speechConfig.speechSynthesisVoiceName}">${text}</voice></speak>`;
-    
+
     //     await new Promise((resolve, reject) => {
     //         synthesizer.speakSsmlAsync(ssml, (result) => {
     //             if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
@@ -461,9 +461,9 @@ class Chatbot {
     //             }
     //         });
     //     });
-    
+
     //     synthesizer.close();
-    
+
     //     const fileContent = fs.readFileSync(localFilePath);
     //     const s3Params = {
     //         Bucket: process.env.S3_BUCKET_NAME,
@@ -472,11 +472,11 @@ class Chatbot {
     //         ContentType: 'audio/mpeg',
     //         ACL: 'public-read',
     //     };
-    
+
     //     const s3Result = await s3.upload(s3Params).promise();
-    
+
     //     fs.unlinkSync(localFilePath);
-    
+
     //     return { audioFilePath: s3Result.Location, visemes: visemes };
     //     // return { audioFilePath: localFilePath, visemes: visemes };
 

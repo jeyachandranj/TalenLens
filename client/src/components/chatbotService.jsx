@@ -3,8 +3,9 @@ import { io } from "socket.io-client";
 class ChatbotService {
 	constructor() {
 		//this.socket = io();
-		//  this.socket = io("http://localhost:3000");
-		this.socket = io("https://ai-interview-talenlens.onrender.com");
+
+		this.socket = io("http://localhost:3000");
+		// this.socket = io("https://ai-interview-talenlens.onrender.com");
 
 
 	}
@@ -12,8 +13,8 @@ class ChatbotService {
 	async init(settings) {
 		let round = localStorage.getItem("round");
 		const name = localStorage.getItem('name')
-
-		this.socket.emit("init", {settings,round,name});
+    const filename=localStorage.getItem("resumename");
+		this.socket.emit("init", {settings,round,name,filename});
 
 		let response = await new Promise((resolve, reject) => {
 			this.socket.on("responseInit", (response) => {
@@ -44,7 +45,7 @@ class ChatbotService {
 			interviewDuration = (Date.now()-interviewStartTime)/1000;
 			console.log('response duration:', interviewDuration);
 		}
-		
+
 
 		this.socket.emit("message", { question: message,duration,interviewStartTime,name });
 

@@ -80,11 +80,25 @@ const UploadResume = () => {
       return;
     }
   
+    if (!name.trim()) {
+      alert("Please enter your name!");
+      return;
+    }
+
+    if (name) {
+      localStorage.setItem("name", name);
+    }
+
+    const customFileName = `${name.replace(/\s+/g, "_")}.pdf`;
+
+    const renamedFile = new File([file], customFileName, { type: file.type });
+
     const formData = new FormData();
-    formData.append("resume", file);
-    formData.append("fileName", fileName);
+    formData.append("resume", renamedFile);
+    formData.append("fileName", customFileName);
     formData.append("role", role);
     formData.append("additionalInfo", additionalInfo);
+    
   
     try {
       const uploadResponse = await fetch("https://ai-interview-talenlens.onrender.com/upload", {
