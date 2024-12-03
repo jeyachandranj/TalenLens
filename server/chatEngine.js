@@ -99,6 +99,7 @@ class Chatbot {
 
         this.speechAudioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
         this.speechRecognizer = new sdk.SpeechRecognizer(this.speechConfig, this.speechAudioConfig);
+        console.log(filename);
         const resumeText = await this.downloadResume(filename);
         console.log(name+" *"+filename);
         this.groqHistory = [];
@@ -133,15 +134,22 @@ class Chatbot {
             });
         }
     }
-
     async downloadResume(filename) {
         return new Promise((resolve, reject) => {
-            let resume_text = "hi";
+            if (!filename) {
+                reject("Filename is required but was not provided.");
+                return;
+            }
+
+            if (!this.publicDir) {
+                reject("Public directory is not configured.");
+                return;
+            }
 
             const resumePath = path.join(this.publicDir, "uploads", filename);
 
             if (!fs.existsSync(resumePath)) {
-                reject("File not found: resume.pdf");
+                reject(`File not found: ${resumePath}`);
                 return;
             }
 
@@ -156,17 +164,16 @@ class Chatbot {
                 }
 
                 const contentArray = data.pages[0].content;
-                for (let i = 0; i < contentArray.length; i++) {
-                    resume_text += contentArray[i].str + " ";
-                }
-
+                let resume_text = contentArray.map((item) => item.str).join(" ");
                 resolve(resume_text);
+
                 console.log("---------------------------------------------------------------------------------------");
                 console.log("Resume text:", resume_text);
                 console.log("---------------------------------------------------------------------------------------");
             });
         });
     }
+
 
 
     async determineScoreAndSection(previousUserMsg, previousAiResponse) {
@@ -550,3 +557,4 @@ class Chatbot {
 }
 
 module.exports = Chatbot;
+

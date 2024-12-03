@@ -7,10 +7,10 @@ import { getDocument } from "pdfjs-dist/build/pdf";
 
 const UploadResume = () => {
   const [name, setName] = useState("");
-  const [role, setRole] = useState("Student"); 
+  const [role, setRole] = useState("Student");
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState(""); 
+  const [fileName, setFileName] = useState("");
   const [pdfText, setPdfText] = useState("");
   const navigate = useNavigate();
 
@@ -26,7 +26,7 @@ const UploadResume = () => {
     if (storedFileName) setFileName(storedFileName);
   }, []);
 
- 
+
   useEffect(() => {
     localStorage.setItem("name", name);
   }, [name]);
@@ -47,7 +47,7 @@ const UploadResume = () => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setFileName(selectedFile.name); 
+      setFileName(selectedFile.name);
       extractTextFromPDF(selectedFile);
     }
   };
@@ -63,14 +63,14 @@ const UploadResume = () => {
         const page = await pdf.getPage(i + 1);
         const content = await page.getTextContent();
         const pageText = content.items.map((item) => item.str).join(" ");
-        text += pageText + " "; 
+        text += pageText + " ";
       }
 
-      setPdfText(text.trim()); 
+      setPdfText(text.trim());
       console.log("Extracted PDF Text:", pdfText);
     };
 
-    fileReader.readAsArrayBuffer(file); 
+    fileReader.readAsArrayBuffer(file);
   };
 
   const handleSubmit = async (e) => {
@@ -79,7 +79,7 @@ const UploadResume = () => {
       alert("Please upload a resume!");
       return;
     }
-  
+
     if (!name.trim()) {
       alert("Please enter your name!");
       return;
@@ -88,9 +88,8 @@ const UploadResume = () => {
     if (name) {
       localStorage.setItem("name", name);
     }
-
     const customFileName = `${name.replace(/\s+/g, "_")}.pdf`;
-
+    localStorage.setItem("rename",customFileName);
     const renamedFile = new File([file], customFileName, { type: file.type });
 
     const formData = new FormData();
@@ -98,26 +97,26 @@ const UploadResume = () => {
     formData.append("fileName", customFileName);
     formData.append("role", role);
     formData.append("additionalInfo", additionalInfo);
-    
-  
+
+
     try {
-      const uploadResponse = await fetch("https://ai-interview-talenlens.onrender.com/upload", {
+      const uploadResponse = await fetch("http://localhost:3000/upload", {
         method: "POST",
         body: formData,
       });
-  
+
       const uploadResult = await uploadResponse.json();
       if (uploadResponse.ok) {
         const email = localStorage.getItem("email");
         console.log("Resume uploaded:", file);
-        console.log("Uploaded file name:", uploadResult.fileName); 
+        console.log("Uploaded file name:", uploadResult.fileName);
         const userData = {
           name: name,
           email:email,
           role: role,
           additionalInfo: additionalInfo
         };
-  
+
         const response = await fetch("http://localhost:3000/upload-resume", { // Make sure this matches your backend URL
           method: "POST",
           headers: {
@@ -125,7 +124,7 @@ const UploadResume = () => {
           },
           body: JSON.stringify(userData),
         });
-  
+
         const result = await response.json();
         if (response.ok) {
           console.log("User data saved:", result.user);
@@ -222,3 +221,4 @@ const UploadResume = () => {
 };
 
 export default UploadResume;
+	

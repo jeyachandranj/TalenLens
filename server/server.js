@@ -8,9 +8,12 @@ const fs = require("fs");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
-const AWS = require("aws-sdk");
 const mongoose = require("mongoose");
+const AWS = require("aws-sdk");
+
 dotenv.config();
+
+const Groq = require("groq-sdk");
 
 const app = express();
 
@@ -25,30 +28,7 @@ const io = new Server(server, {
 
 const chatbot = new Chatbot("public" === "public");
 
-
 app.use(express.static("dist"));
-
-// In-memory store for uploads
-const uploads = {};
-
-// Configure Multer for the uploads folder
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "./public/uploads");
-
-    // Create uploads folder if it doesn't exist
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    cb(null, uploadPath); // Set the destination to the uploads folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname); // Use original file name
-  },
-});
-
-const upload = multer({ storage });
 
 io.on("connection", (socket) => {
   console.log(`CONNECTED ${socket.id}`);
@@ -59,11 +39,12 @@ io.on("connection", (socket) => {
 
   socket.on("init", async ({ settings, round, name, filename }) => {
     try {
+      console.log(filename+ "*");
       await chatbot.initialize(settings, round, name, filename, socket.id);
       socket.emit("responseInit", true);
       console.log(`INITIALIZED ${socket.id}`);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       socket.emit("responseInit", false);
       console.log(`INIT FAILED ${socket.id}`);
     }
@@ -110,52 +91,47 @@ app.get("/api/evaluateInterview", async (req, res) => {
     return res.status(400).json({ error: "interviewDuration and name are required" });
   }
 
-  const interviewProgress = await chatbot.evaluateInterviewProgress(
-    interviewDuration,
-    name
-  );
-
-  return res.json(interviewProgress);
+  try {
+    const interviewProgress = await chatbot.evaluateInterviewProgress(interviewDuration, name);
+    return res.json(interviewProgress);
+  } catch (error) {
+    console.error("Error evaluating interview progress:", error);
+    res.status(500).json({ error: "Error evaluating interview progress" });
+  }
 });
 
-// Upload resume endpoint with Tab-ID
+// Configure Multer for the uploads folder
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, "./public/uploads");
+
+    // Create uploads folder if it doesn't exist
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    cb(null, uploadPath); // Set the destination to the uploads folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname); // Use original file name
+  },
+});
+
+const upload = multer({ storage });
+
 app.post("/upload", upload.single("resume"), (req, res) => {
   try {
-    const tabId = req.headers["tab-id"] || `default-${Date.now()}`;
     const filePath = path.join("uploads", req.file.originalname);
-
-    // Store the upload details in the in-memory object
-    uploads[tabId] = {
-      filePath,
-      uploadedAt: new Date(),
-    };
-
-    console.log(`File uploaded for Tab ID: ${tabId}, Path: ${filePath}`);
-
     res.status(200).json({
       message: "File uploaded successfully",
-      tabId,
-      filePath,
+      filePath: filePath, // Return the file path in the uploads folder
     });
   } catch (error) {
-    console.error("File upload failed:", error);
     res.status(500).json({
       message: "File upload failed",
       error,
     });
   }
-});
-
-// Retrieve upload details for a specific Tab-ID
-app.get("/get-upload/:tabId", (req, res) => {
-  const tabId = req.params.tabId;
-  const uploadDetails = uploads[tabId];
-
-  if (!uploadDetails) {
-    return res.status(404).json({ message: "No upload found for this Tab ID" });
-  }
-
-  res.status(200).json(uploadDetails);
 });
 
 app.use(express.json());
@@ -204,8 +180,6 @@ app.post("/upload-audio", audio.single("audioFile"), async (req, res) => {
     res.status(500).send("Error uploading file.");
   }
 });
-
-
 const userSchema = new mongoose.Schema({
   name: String,
   email:String,
@@ -214,8 +188,6 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
-
-// POST API to store the user data
 app.post("/upload-resume", async (req, res) => {
   const { name , email, role, additionalInfo } = req.body;
 
@@ -231,6 +203,7 @@ app.post("/upload-resume", async (req, res) => {
   }
 });
 
+
 server.listen(3000, () => {
-  console.log(`Server started at http://localhost:3000`);
+  console.log("Server started at http://localhost:3000");
 });
