@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import PhoneDetectionComponent from '../components/ObjectDetection';
+import { useNavigate } from 'react-router-dom';
 import Advance from "./Advance";
-
 const RoundsComponent = () => {
   const [isPhoneDetected, setIsPhoneDetected] = useState(false);
   const [timer, setTimer] = useState(0);
   const [currentRound, setCurrentRound] = useState("Technical");
-
+  const navigate = useNavigate(); 
   const totalTime = 30 * 60; // Total interview time in seconds (30 minutes)
   const roundDurations = {
     Technical: 10 * 60,
     Project: 10 * 60,
     HR: 10 * 60,
   };
-
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prevTimer) => prevTimer + 1);
     }, 1000);
 
+    // Update the current round based on the time elapsed
     if (timer >= 20 * 60) {
       setCurrentRound("HR");
     } else if (timer >= 10 * 60) {
@@ -26,11 +26,15 @@ const RoundsComponent = () => {
     } else {
       setCurrentRound("Technical");
     }
-    localStorage.setItem("round",currentRound);
+    localStorage.setItem("round", currentRound);
 
-    return () => clearInterval(interval);
-  }, [timer]);
+    if (timer >= totalTime) {
+      clearInterval(interval); 
+      navigate('/interviewend'); 
+    }
 
+    return () => clearInterval(interval); 
+  }, [timer, currentRound, navigate]); 
   const getCircleProgress = () => {
     return (timer / totalTime) * 100;
   };
@@ -106,7 +110,6 @@ const RoundsComponent = () => {
     height: "500px",
     borderRadius: '40px',
   };
-
   const calculateTimeLeft = (totalTime, timer) => {
     const timeLeft = totalTime - timer;
     const minutes = Math.floor(timeLeft / 60);
@@ -118,8 +121,6 @@ const RoundsComponent = () => {
     <div style={containerStyle}>
       <div style={sidebarStyle}>
         <div style={{ fontSize: '30px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '30px' }}>ROUNDS</div>
-        
-        {/* Round Buttons */}
         <div style={buttonStyle("Technical")}>Technical </div>
         <div style={buttonStyle("Project")}>Project </div>
         <div style={buttonStyle("HR")}>HR </div>
