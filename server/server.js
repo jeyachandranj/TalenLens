@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
 const AWS = require("aws-sdk");
-
+const mongoose = require("mongoose");
 dotenv.config();
 
 const app = express();
@@ -202,6 +202,32 @@ app.post("/upload-audio", audio.single("audioFile"), async (req, res) => {
   } catch (error) {
     console.error("Error uploading file to S3:", error);
     res.status(500).send("Error uploading file.");
+  }
+});
+
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email:String,
+  role: String,
+  additionalInfo: String, // This can be either college name or last company name based on the role
+});
+
+const User = mongoose.model("User", userSchema);
+
+// POST API to store the user data
+app.post("/upload-resume", async (req, res) => {
+  const { name , email, role, additionalInfo } = req.body;
+
+  try {
+    // Create a new user document in the database
+    const newUser = new User({ name, email, role, additionalInfo });
+    await newUser.save();
+
+    res.status(200).json({ message: "Data saved successfully", user: newUser });
+  } catch (err) {
+    console.error("Error saving data:", err);
+    res.status(500).json({ message: "Error saving data" });
   }
 });
 

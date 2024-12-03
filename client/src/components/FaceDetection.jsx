@@ -69,8 +69,6 @@ function FaceDetection() {
         );
         navigate("/protected", { replace: true });
       }
-      navigate("/InterviewInstruction ", { replace: true });
-      
 
       return () => clearInterval(counterInterval);
     }
