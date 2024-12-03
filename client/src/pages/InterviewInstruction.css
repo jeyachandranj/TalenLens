@@ -1,3 +1,5 @@
+
+
 .flex-center {
     display: flex;
     align-items: center;
@@ -15,6 +17,13 @@
     margin-bottom: 16px;
 }
 
+
+/* Add margin-top to the new div only */
+.interview-process-container {
+    margin-top: 30px;  /* Adjust the value as needed */
+}
+
+
 .section-container {
     display: flex;
     flex-direction: column;
@@ -22,8 +31,16 @@
     max-width: 1500px;
     width: 1200px;
     padding: 15px;
-}
 
+}
+/* Heading container */
+.div-container {
+    text-align: left; /* Ensure text starts on the left */
+    display: flex;    /* Use flex for precise alignment */
+    justify-content: flex-end; /* Push the text towards the right */
+    padding-right: 10%; /* Adjust space towards the right */
+    margin-left: 180px;
+}
 .section-box {
     border: 1px solid #ddd;
     padding:20px;
@@ -31,6 +48,8 @@
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #f9f9f9;
+    margin-left: 80px; /* Adjust the margin as needed */
+
 }
 
 .icon-text {
@@ -51,3 +70,14 @@
     display: flex;
     justify-content: center;  
 }
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  

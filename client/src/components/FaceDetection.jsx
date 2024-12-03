@@ -182,9 +182,9 @@ function FaceDetection() {
 
   return (
     <>
-    <div style={{marginRight:"1920px"}}>
-    <TopBar/>
-    </div>
+    <div style={{ position: "fixed", top: 0, left: 0, width: "200px", zIndex: 1000 }}>
+        <TopBar />
+      </div> 
     <div className="h-full flex flex-col items-center justify-center gap-[24px] max-w-[720px] mx-auto">
       {!localUserStream && !modelsLoaded && (
         <h2 className="text-center text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">

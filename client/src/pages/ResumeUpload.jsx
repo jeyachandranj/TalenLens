@@ -4,6 +4,8 @@ import resumupload from "../assets/resumupload.png";
 import TopBar from "./TopBar";
 import { useNavigate } from "react-router-dom";
 import { getDocument } from "pdfjs-dist/build/pdf";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the styles for toast
 
 const UploadResume = () => {
   const [name, setName] = useState("");
@@ -76,7 +78,9 @@ const UploadResume = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Please upload a resume!");
+      toast.error("Please upload a resume!", {
+        autoClose: 800, // Auto-close after 1000 ms (1 second)
+      });
       return;
     }
   
@@ -92,9 +96,15 @@ const UploadResume = () => {
         body: formData,
       });
   
+
+      const result = await response.json();
+      if (response.ok) {
+        toast.success("Resume uploaded successfully!"); // Success toast
+
       const uploadResult = await uploadResponse.json();
       if (uploadResponse.ok) {
         const email = localStorage.getItem("email");
+
         console.log("Resume uploaded:", file);
         console.log("Uploaded file name:", uploadResult.fileName); 
         const userData = {
@@ -120,13 +130,35 @@ const UploadResume = () => {
           alert("Failed to save user data.");
         }
       } else {
-        alert("File upload failed.");
+        toast.error("File upload failed.", {
+          autoClose: 800, // Auto-close after 1000 ms (1 second)
+        });
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert("An error occurred during file upload.");
+      toast.error("An error occurred during file upload.", {
+        autoClose: 800, // Auto-close after 1000 ms (1 second)
+      });
     }
   };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const handleDrop = (e) => {
+     e.preventDefault();
+     e.stopPropagation();
+     const file = e.dataTransfer.files[0];
+     if (file && file.type === "application/pdf") {
+       setFile(file);
+       setFileName(file.name);
+       extractTextFromPDF(file);
+     } else {
+       toast.error("Please upload a PDF file.");
+     }
+   };
+
 
   return (
     <>
@@ -181,11 +213,13 @@ const UploadResume = () => {
               </div>
               <div className="form-group">
                 <label>Resume</label>
-                <div className="upload-box">
+                <div className="upload-box"onDragOver={handleDragOver} onDrop={handleDrop} >
                   <input
                     type="file"
                     accept=".pdf"
+                    
                     onChange={handleFileChange}
+                    
                     className="file-input"
                   />
                   <div className="upload-text">
@@ -203,6 +237,9 @@ const UploadResume = () => {
           </div>
         </div>
       </div>
+
+      {/* ToastContainer to show toast notifications with auto-close time */}
+      <ToastContainer autoClose={800} />
     </>
   );
 };
