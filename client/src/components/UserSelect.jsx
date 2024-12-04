@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import TopBar from "../pages/TopBar"
 import success from "../assets/success.png";
-
+import { toast, ToastContainer } from "react-toastify";
 function UserSelect() {
   
   const [selected, setSelected] = useState("");
@@ -25,11 +25,17 @@ function UserSelect() {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center gap-[24px] w-full max-w-[720px]  mx-auto" style={{marginBottom:"560px"}}>
-      <div style={{marginRight:"1900px"}}>
-      <TopBar/>
+    <div className="upload-wrapper">
+           
+      {/* Sidebar */}
+      <div style={{ position: "fixed", top: 0, left: 0, width: "200px", zIndex: 1000 }}>
+        <TopBar />
+        <ToastContainer />
+      </div> 
 
-      </div>
+      {/* Main content */}
+      <div className="userselect-container" style={{ marginTop: '35px', left:40, width: "600px"}}>
+
       <h1 className="text-2xl font-semibold">Upload User Image</h1>
       <div className="w-full p-4 text-right">
         <div className="mx-auto w-full max-w-md">
@@ -82,6 +88,7 @@ function UserSelect() {
                       suffix != "jpeg"
                     ) {
                       setErrorMessage("Only support png jpg or jpeg files.");
+                      toast.error("Invalid file format. Only PNG, JPG, or JPEG are supported.");
                       return;
                     }
 
@@ -96,6 +103,8 @@ function UserSelect() {
 
                     setCustomUser(user);
                     setSelected(user);
+                    toast.success("Image uploaded successfully!"); // Success toast
+
                   }}
                 />
               </label>
@@ -135,6 +144,8 @@ function UserSelect() {
           </Link>
         </div>
       </div>
+      </div>
+     
     </div>
   );
 }

@@ -286,10 +286,10 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
       {isChatbotReady ? (
         <section className="chatbotInputContainer">
           <div className="chatbotInput" data-listening={listening}>
-            <div className="chatbotInput_container">
-              <form onSubmit={(e) => e.preventDefault()} className="inputForm" style={{ marginLeft: "200px", marginBottom: "50px", width: "1400px" }}>
-                <div className="microphoneIcon">
-                  <button type="button" onClick={toggleListening} className="mic-button" style={{ backgroundColour: 'black', marginRight: "100px" }}>
+            <div className="chatbotInput_container" >
+              <form onSubmit={(e) => e.preventDefault()} className="inputForm" style={{ marginLeft: "200px", marginBottom: "160px", width: "1400px" }}>
+                <div className="microphoneIcon" style={{marginBottom:'400px'}}>
+                  <button type="button" onClick={toggleListening} className="mic-button" style={{ backgroundColour: 'black', marginRight: "100px", marginBottom:'270px' }}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -324,13 +324,17 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
                   style={{
                     color: "black",
                     backgroundColor: "white",
-                    fontSize: "25px",
-                    width: "1200px",
-                    marginLeft: "150px",
-                    height: "150px",
-                    maxHeight: "300px",
-                    marginTop: "200px",
+                    fontSize: "18px",
+                    width: "450px",
+                    height: "100px",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    maxHeight: "200px",
+                    border: listening ? "3px solid red" : "2px solid #ccc",
+                    transition: "border 0.3s ease, box-shadow 0.3s ease",
                     overflow: "hidden",
+                    resize: "none",
+
 
                   }}
                   placeholder="Speak or type a message..."
@@ -347,14 +351,7 @@ const UserInput = ({ setResponse, isChatbotReady, setIsChatbotReady, response })
 
 
 
-          <div className="chatbotSettings" data-visible={visible}>
-            <SettingsDisplay
-              settings={settings}
-              setSettings={setSettings}
-              visible={visible}
-              setVisible={setVisible}
-            />
-          </div>
+          
         </section>
       ) : (
         <></>

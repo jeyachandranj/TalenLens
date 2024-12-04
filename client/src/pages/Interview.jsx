@@ -6,6 +6,7 @@ const RoundsComponent = () => {
   const [isPhoneDetected, setIsPhoneDetected] = useState(false);
   const [timer, setTimer] = useState(0);
   const [currentRound, setCurrentRound] = useState("Technical");
+  const [popupMessage, setPopupMessage] = useState('');
   const navigate = useNavigate(); 
   const totalTime = 30 * 60; // Total interview time in seconds (30 minutes)
   const roundDurations = {
@@ -19,25 +20,30 @@ const RoundsComponent = () => {
     }, 1000);
 
     // Update the current round based on the time elapsed
-    if (timer >= 20 * 60) {
+    if (timer >= 20 * 60 && currentRound !== "HR") {
+      setPopupMessage('You have completed the Project round. Next round is HR.');
       setCurrentRound("HR");
-    } else if (timer >= 10 * 60) {
+    } else if (timer >= 10 * 60 && timer < 20 * 60 && currentRound !== "Project") {
+      setPopupMessage('You have completed the Technical round. Next round is Project.');
       setCurrentRound("Project");
-    } else {
+    } else if (timer < 10 * 60 && currentRound !== "Technical") {
       setCurrentRound("Technical");
     }
     localStorage.setItem("round", currentRound);
 
     if (timer >= totalTime) {
       clearInterval(interval); 
+      setPopupMessage('Interview process is completed. Thank you!');
       navigate('/interviewend'); 
     }
 
     return () => clearInterval(interval); 
   }, [timer, currentRound, navigate]); 
+
   const getCircleProgress = () => {
     return (timer / totalTime) * 100;
   };
+  const closePopup = () => setPopupMessage('');
 
   const isRoundCompleted = (round) => {
     switch (round) {
@@ -60,17 +66,52 @@ const RoundsComponent = () => {
   };
 
   const sidebarStyle = {
-    width: '250px',
-    backgroundColor: 'white',
+    width: '300px',
+    height: 'auto',
+    backgroundColor: '#ffffff',
     padding: '20px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-between',
-    color: 'black',
     borderRadius: '0px 40px 40px 0px',
+    boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
   };
-
+  const popup= {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '400px',
+    padding: '20px',
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    textAlign: 'center',
+    zIndex: 1000,
+  };
+ const  popupText={
+    marginBottom: '15px',
+    fontSize: '16px',
+    color: '#333',
+  };
+  const popupButton= {
+    padding: '10px 20px',
+    borderRadius: '5px',
+    backgroundColor: '#4b9eff',
+    color: '#fff',
+    border: 'none',
+    cursor: 'pointer',
+  };
+  const overlay ={
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
+  };
   const timerCircleStyle = {
     position: 'relative',
     width: '150px',
@@ -105,10 +146,11 @@ const RoundsComponent = () => {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: "100px",
+    padding: "50px",
     backgroundColor: 'lightblue',
     height: "500px",
     borderRadius: '40px',
+    marginBottom:'650px'
   };
   const calculateTimeLeft = (totalTime, timer) => {
     const timeLeft = totalTime - timer;
@@ -119,6 +161,17 @@ const RoundsComponent = () => {
 
   return (
     <div style={containerStyle}>
+      {popupMessage && (
+        <>
+          <div style={overlay} onClick={closePopup}></div>
+          <div style={popup}>
+            <p style={popupText}>{popupMessage}</p>
+            <button style={popupButton} onClick={closePopup}>
+              OK
+            </button>
+          </div>
+        </>
+      )}
       <div style={sidebarStyle}>
         <div style={{ fontSize: '30px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '30px' }}>ROUNDS</div>
         <div style={buttonStyle("Technical")}>Technical </div>

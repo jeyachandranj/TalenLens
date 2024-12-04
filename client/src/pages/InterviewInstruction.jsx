@@ -3,23 +3,37 @@ import './InterviewInstruction.css';
 import { FaBullseye, FaFileAlt, FaRobot, FaChartLine } from 'react-icons/fa';
 import TopBar from './TopBar';
 import { Link } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 function InterviewInstruction() {
     const [isChecked, setIsChecked] = useState(false);
+    const navigate = useNavigate();
 
     const handleCheckboxChange = () => {
         setIsChecked(!isChecked);
     };
-
+    const handleContinue = () => {
+        if (isChecked) {
+          navigate('/settingsDisplay');
+        } else {
+            toast.error('Please agree to the terms and conditions before proceeding.');
+        }
+      };
     return (
         <>
-        <div>
-            <TopBar/>
-        </div>
-            <h1 className="font-bold">INTERVIEW PROCESS</h1>
-            <div className="flex flex-center">
-                <div className="flex flex-cols border-2 p-4 rounded-lg section-container">
-                    <div className="section-box">
+              <ToastContainer />
+        <div className="flex flex-center">
+        <div className="interview-process-container flex flex-col items-center justify-center"> 
+         <div style={{ position: "fixed", top: 0, left: 0, width: "200px", zIndex: 1000 }}>
+        <TopBar />
+      </div>
+      <div className="div-container">
+        <h1 className="font-bold">INTERVIEW PROCESS</h1>
+        </div>            
+        <div className="section-container">
+            <div className="section-box">
                         <div className="icon-text">
                             <FaBullseye className="icon" />
                             <h3>Stay Focused</h3>
@@ -61,29 +75,34 @@ function InterviewInstruction() {
                         <label htmlFor="termsCheckbox" className="terms-label">
                             I agree to the terms and conditions
                         </label>
-                        <Link
-                            to="/Interview"
-                            className="mt-4 ml-10  inline-flex items-center rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600"
-                        >
-                            Continue
-                            <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="ml-1.5 h-5 w-5"
-                            >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                            />
-                            </svg>
-                        </Link>
+                        <button
+                onClick={handleContinue}
+                className={`mt-4 ml-10 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm ${
+                  isChecked
+                    ? 'bg-indigo-500 text-white hover:bg-indigo-600'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Continue
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="ml-1.5 h-5 w-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
+                  />
+                </svg>
+              </button>
                     </div>
                 </div>
             </div>
+        </div>
         </>
     );
 }

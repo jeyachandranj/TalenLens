@@ -84,8 +84,8 @@
   }
   
   .center-image {
-    width: 700px; /* Adjust the width to be responsive */
-    height: 700px;
+    width: 350px; /* Larger image size */
+    height: auto;
     margin-bottom: 20px;
   }
   
@@ -130,8 +130,9 @@
     }
     
     .center-image {
-      width: 500px; /* Make image smaller for tablets */
+      width: 350px; /* Larger image size */
       height: auto;
+      margin-bottom: 20px;
     }
   
     .menu-icon {

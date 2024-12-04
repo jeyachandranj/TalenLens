@@ -1,37 +1,49 @@
 .upload-container {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 40px;
-    background-color: #fff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-  }
+  max-width: 1200px; 
+  width: 90%; 
+  height: auto; 
+  padding: 40px;
+  background-color: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: row;
+  transform: scale(0.95) translateX(50px); 
+}
   
-  h2 {
-    text-align: center;
-    font-family: 'Georgia', serif;
-    font-size: 36px;
-    margin-bottom: 40px;
-    color: #3e3e3e;
 
-  }
-  
+
   .upload-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    margin-top: 75px; 
+    width: 100%;
   }
   
   .upload-image img {
-    width: 800px;
-    height: auto;
+    max-width: 50vw; 
+    max-height: 70vh;
+    object-fit: contain;
   }
   
   .upload-form {
     flex: 1;
     padding-left: 40px;
+    max-width: 600px; 
+    overflow: hidden;
   }
-  
+
+  h2 {
+    text-align: center;
+    font-family: 'Georgia', serif;
+    font-size: 40px;
+    margin-bottom: 40px;
+    color: #3e3e3e;
+  }
   h3 {
     font-family: 'Georgia', serif;
     font-size: 24px;
@@ -67,7 +79,9 @@
     border-radius: 8px;
     cursor: pointer;
     position: relative;
+    width: 100%;
   }
+  
   
   .upload-box .file-input {
     position: absolute;

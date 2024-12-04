@@ -8,10 +8,10 @@ html {
 .main-container {
 position: relative;
 display: grid;
-width: 100%;
-height: 500px;
+width: 110%;
+height: 600px;
 background-color: lightblue;
-margin-top: 570px;
+margin-top: 400px;
 }
 .main-container .loading {
 position: absolute;
@@ -44,7 +44,8 @@ font-size: 1.2rem;
 .canvas-wrapper {
 position: relative;
 display: grid;
-height: 110vh;
+height: 100vh;
+background-color:lightblue
 }
 .chatbotInputContainer {
 position: absolute;
@@ -90,6 +91,7 @@ transform: translateY(-50%);
 font-size: 24px;
 color: red;
 cursor: pointer;
+margin-bottom: 130px;
 }
 .chatbotSettings::-webkit-scrollbar {
 display: none;
@@ -108,6 +110,7 @@ display: grid;
 grid-template-columns: auto max-content;
 align-items: center;
 gap: 2em;
+margin-top:'30px';
 }
 .chatbotInput .chatbotInput_container i {
 cursor: pointer;

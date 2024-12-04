@@ -5,6 +5,7 @@ import "./Login.css";
 import CenterImage from "../assets/main.png";
 import Logo from "../assets/logo.png";
 import { FaBars } from "react-icons/fa";
+import GoogleButton from "react-google-button"; // Import the GoogleButton component
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

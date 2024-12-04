@@ -4,6 +4,8 @@ import resumupload from "../assets/resumupload.png";
 import TopBar from "./TopBar";
 import { useNavigate } from "react-router-dom";
 import { getDocument } from "pdfjs-dist/build/pdf";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the styles for toast
 
 const UploadResume = () => {
   const [name, setName] = useState("");
@@ -49,6 +51,7 @@ const UploadResume = () => {
       setFile(selectedFile);
       setFileName(selectedFile.name);
       extractTextFromPDF(selectedFile);
+      toast.success("Resume uploaded successfully!"); 
     }
   };
 
@@ -76,12 +79,16 @@ const UploadResume = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Please upload a resume!");
-      return;
+      toast.error("Please upload a resume!", {
+        autoClose: 800,
+      });
+        return;
     }
 
     if (!name.trim()) {
-      alert("Please enter your name!");
+      toast.info("Please enter your name!", {
+        autoClose: 800, 
+      });
       return;
     }
 
@@ -107,6 +114,7 @@ const UploadResume = () => {
 
       const uploadResult = await uploadResponse.json();
       if (uploadResponse.ok) {
+        toast.success("Resume uploaded successfully!"); // Success toast
         const email = localStorage.getItem("email");
         console.log("Resume uploaded:", file);
         console.log("Uploaded file name:", uploadResult.fileName);
@@ -116,6 +124,7 @@ const UploadResume = () => {
           role: role,
           additionalInfo: additionalInfo
         };
+        
 
         const response = await fetch("http://localhost:3000/upload-resume", { // Make sure this matches your backend URL
           method: "POST",
@@ -128,18 +137,37 @@ const UploadResume = () => {
         const result = await response.json();
         if (response.ok) {
           console.log("User data saved:", result.user);
+          toast.success("Resume uploaded successfully!"); 
           navigate("/uploadface");
-        } else {
-          alert("Failed to save user data.");
-        }
+        } 
       } else {
-        alert("File upload failed.");
+        toast.error("An error occurred during file upload.", {
+          autoClose: 800, 
+        });
       }
     } catch (error) {
+      toast.error("An error occurred during file upload.", {
+        autoClose: 800, 
+      });      
       console.error("Error uploading file:", error);
-      alert("An error occurred during file upload.");
     }
   };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const handleDrop = (e) => {
+     e.preventDefault();
+     e.stopPropagation();
+     const file = e.dataTransfer.files[0];
+     if (file && file.type === "application/pdf") {
+       setFile(file);
+       setFileName(file.name);
+       extractTextFromPDF(file);
+     } else {
+       toast.error("Please upload a PDF file.");
+     }
+   };
 
   return (
     <>
@@ -194,7 +222,7 @@ const UploadResume = () => {
               </div>
               <div className="form-group">
                 <label>Resume</label>
-                <div className="upload-box">
+                <div className="upload-box"onDragOver={handleDragOver} onDrop={handleDrop} >
                   <input
                     type="file"
                     accept=".pdf"
@@ -216,6 +244,8 @@ const UploadResume = () => {
           </div>
         </div>
       </div>
+      <ToastContainer autoClose={800} />
+
     </>
   );
 };

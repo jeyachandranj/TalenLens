@@ -83,7 +83,7 @@ function App() {
   }, [isFullscreen]);
 
   return (
-    <div className="main-container" data-chatbot-ready={isChatbotReady} style={{backgroundColor:"lightblue"}}>
+    <div className="main-container" data-chatbot-ready={isChatbotReady} >
         <Modal 
           isOpen={showFullscreenModal} 
           onClose={() => setShowFullscreenModal(false)} 
@@ -94,7 +94,7 @@ function App() {
           <img src = {logo} alt="Loading..." className="loading-gif" />
         </div>
       )}
-      <div className="canvas-wrapper" style={{borderRadius:"30px"}}>
+      <div className="canvas-wrapper" style={{borderRadius:"30px",}}>
         <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} className="canvas">
           <color attach="background" args={["#ececec"]} />
           <Experience response={response} />
